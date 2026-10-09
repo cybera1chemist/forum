@@ -4,16 +4,65 @@
         "nickname": "萌萌小兔兔宝宝",
         "gender": "male"
     },
+
     "user1": {
         "id": 1,
         "nickname": "小贝",
-        "gender": "male"
+        "gender": "male",
+        "is_spy": false,
+        "age": 46,
+        "job": "厨师",
+        "home": "四川"
     },
     
     "user2": {
         "id": 2,
-        "nickname": "balabala",
-        "gender": "male"
+        "nickname": "月之暗面",
+        "gender": "male",
+        "is_spy": false,
+        "age": 19,
+        "job": "曲师",
+        "home": "浙江"
+    },
+
+    "user3": {
+        "id": 3,
+        "nickname": "偏我来时不逢春",
+        "gender": "female",
+        "is_spy": true,
+        "age": 61,
+        "job": "漫画家",
+        "home": "北京"
+    },
+
+    "user4": {
+        "id": 4,
+        "nickname": "核突",
+        "gender": "male",
+        "is_spy": false,
+        "age": 33,
+        "job": "玄学顾问",
+        "home": "广东"
+    },
+
+    "user5": {
+        "id": 5,
+        "nickname": "酸甜苦辣咸快乐天天见",
+        "gender": "female",
+        "is_spy": false,
+        "age": 24,
+        "job": "小说家",
+        "home": "云南"
+    },
+
+    "user6": {
+        "id": 6,
+        "nickname": "硫磺火",
+        "gender": "female",
+        "is_spy": true,
+        "age": 27,
+        "job": "程序员",
+        "home": "江苏"
     }
 
     
