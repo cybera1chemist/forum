@@ -101,7 +101,19 @@ async function loadRecentPosts() {
       if (!response.ok) {
         throw new Error(`帖子 ${filename} 读取失败（HTTP ${response.status}）`);
       }
-      return response.json();
+      const post = await response.json();
+      if (post.meta?.isAnonymous) {
+        const identityIds = new Set(anonymousIdentities.map((identity) => Number(identity.id)));
+        const mapping = post.anonymousIdentities;
+        if (
+          !Array.isArray(mapping)
+          || mapping.length !== 6
+          || mapping.some((identityId) => !Number.isInteger(identityId) || !identityIds.has(identityId))
+        ) {
+          throw new Error(`帖子 ${filename} 的匿名身份映射格式错误：必须包含 6 个有效匿名身份 ID。`);
+        }
+      }
+      return post;
     }));
 
     return { posts, users, anonymousIdentities };
@@ -116,36 +128,14 @@ function getAnonymousAssignments(post, anonymousIdentities) {
   if (!meta.isAnonymous) return new Map();
 
   const identityById = new Map(anonymousIdentities.map((identity) => [Number(identity.id), identity]));
-  const configuredIds = Array.isArray(post.anonymousIdentities)
-    ? post.anonymousIdentities.map(Number).filter((id) => identityById.has(id))
-    : [];
-  const candidates = configuredIds.length > 0
-    ? configuredIds
-    : anonymousIdentities.map((identity) => Number(identity.id));
   const participantIds = [meta.author_id, ...(post.replies ?? []).map((reply) => reply.authorId)]
     .filter((id) => id !== undefined && id !== null)
     .map(String)
     .filter((id, index, ids) => ids.indexOf(id) === index);
-  const seedText = `${meta.title ?? ""}:${participantIds.join(",")}`;
-  let seed = 2166136261;
-
-  for (const character of seedText) {
-    seed = Math.imul(seed ^ character.charCodeAt(0), 16777619);
-  }
-
-  const shuffledIds = [...candidates];
-  for (let index = shuffledIds.length - 1; index > 0; index -= 1) {
-    seed ^= seed << 13;
-    seed ^= seed >>> 17;
-    seed ^= seed << 5;
-    const swapIndex = (seed >>> 0) % (index + 1);
-    [shuffledIds[index], shuffledIds[swapIndex]] = [shuffledIds[swapIndex], shuffledIds[index]];
-  }
-
-  return new Map(participantIds.map((participantId, index) => [
-    participantId,
-    identityById.get(shuffledIds[index % shuffledIds.length])
-  ]));
+  return new Map(participantIds.map((participantId) => {
+    const anonymousIdentityId = post.anonymousIdentities[Number(participantId) - 1];
+    return [participantId, identityById.get(anonymousIdentityId)];
+  }));
 }
 
 function getAuthorName(post, users, anonymousIdentities) {
