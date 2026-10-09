@@ -2,231 +2,277 @@
   {
     "id": 1,
     "name": "低保小猫",
-    "avatar_path": "assets/images/anonymous/cat.svg"
+    "avatar_path": "assets/images/anonymous/cat.svg",
+    "color": "#FF4D6D"
   },
   {
     "id": 2,
     "name": "反光小狗",
-    "avatar_path": "assets/images/anonymous/dog.svg"
+    "avatar_path": "assets/images/anonymous/dog.svg",
+    "color": "#FF7A3D"
   },
   {
     "id": 3,
     "name": "香菜小猪",
-    "avatar_path": "assets/images/anonymous/pig.svg"
+    "avatar_path": "assets/images/anonymous/pig.svg",
+    "color": "#FFD84D"
   },
   {
     "id": 4,
     "name": "静音小牛",
-    "avatar_path": "assets/images/anonymous/cow.svg"
+    "avatar_path": "assets/images/anonymous/cow.svg",
+    "color": "#B8FF3D"
   },
   {
     "id": 5,
     "name": "折叠小羊",
-    "avatar_path": "assets/images/anonymous/sheep.svg"
+    "avatar_path": "assets/images/anonymous/sheep.svg",
+    "color": "#55F28B"
   },
   {
     "id": 6,
     "name": "过期小马",
-    "avatar_path": "assets/images/anonymous/horse.svg"
+    "avatar_path": "assets/images/anonymous/horse.svg",
+    "color": "#35F0B0"
   },
   {
     "id": 7,
     "name": "倒立小驴",
-    "avatar_path": "assets/images/anonymous/donkey.svg"
+    "avatar_path": "assets/images/anonymous/donkey.svg",
+    "color": "#35E8E8"
   },
   {
     "id": 8,
     "name": "打嗝小鸡",
-    "avatar_path": "assets/images/anonymous/chicken.svg"
+    "avatar_path": "assets/images/anonymous/chicken.svg",
+    "color": "#36BFFF"
   },
   {
     "id": 9,
     "name": "洗澡小鸭",
-    "avatar_path": "assets/images/anonymous/duck.svg"
+    "avatar_path": "assets/images/anonymous/duck.svg",
+    "color": "#5B8CFF"
   },
   {
     "id": 10,
     "name": "空心小鹅",
-    "avatar_path": "assets/images/anonymous/goose.svg"
+    "avatar_path": "assets/images/anonymous/goose.svg",
+    "color": "#7C6CFF"
   },
   {
     "id": 11,
     "name": "迟到白鸽",
-    "avatar_path": "assets/images/anonymous/dove.svg"
+    "avatar_path": "assets/images/anonymous/dove.svg",
+    "color": "#A66BFF"
   },
   {
     "id": 12,
     "name": "熬夜老虎",
-    "avatar_path": "assets/images/anonymous/tiger.svg"
+    "avatar_path": "assets/images/anonymous/tiger.svg",
+    "color": "#D66BFF"
   },
   {
     "id": 13,
     "name": "近视狮子",
-    "avatar_path": "assets/images/anonymous/lion.svg"
+    "avatar_path": "assets/images/anonymous/lion.svg",
+    "color": "#FF62D0"
   },
   {
     "id": 14,
     "name": "晕车豹子",
-    "avatar_path": "assets/images/anonymous/leopard.svg"
+    "avatar_path": "assets/images/anonymous/leopard.svg",
+    "color": "#FF5C9A"
   },
   {
     "id": 15,
     "name": "塑料小熊",
-    "avatar_path": "assets/images/anonymous/bear.svg"
+    "avatar_path": "assets/images/anonymous/bear.svg",
+    "color": "#FF9F43"
   },
   {
     "id": 16,
     "name": "脸盲猴子",
-    "avatar_path": "assets/images/anonymous/monkey.svg"
+    "avatar_path": "assets/images/anonymous/monkey.svg",
+    "color": "#E8FF4A"
   },
   {
     "id": 17,
     "name": "健忘猿猴",
-    "avatar_path": "assets/images/anonymous/gorilla.svg"
+    "avatar_path": "assets/images/anonymous/gorilla.svg",
+    "color": "#72FF57"
   },
   {
     "id": 18,
     "name": "话痨小鹿",
-    "avatar_path": "assets/images/anonymous/deer.svg"
+    "avatar_path": "assets/images/anonymous/deer.svg",
+    "color": "#28D7A8"
   },
   {
     "id": 19,
     "name": "抽象大象",
-    "avatar_path": "assets/images/anonymous/elephant.svg"
+    "avatar_path": "assets/images/anonymous/elephant.svg",
+    "color": "#2ED6FF"
   },
   {
     "id": 20,
     "name": "离谱小狼",
-    "avatar_path": "assets/images/anonymous/wolf.svg"
+    "avatar_path": "assets/images/anonymous/wolf.svg",
+    "color": "#638BFF"
   },
   {
     "id": 21,
     "name": "中二狐狸",
-    "avatar_path": "assets/images/anonymous/fox.svg"
+    "avatar_path": "assets/images/anonymous/fox.svg",
+    "color": "#9B7BFF"
   },
   {
     "id": 22,
     "name": "社牛熊猫",
-    "avatar_path": "assets/images/anonymous/panda.svg"
+    "avatar_path": "assets/images/anonymous/panda.svg",
+    "color": "#E85DFF"
   },
   {
     "id": 23,
     "name": "月光考拉",
-    "avatar_path": "assets/images/anonymous/koala.svg"
+    "avatar_path": "assets/images/anonymous/koala.svg",
+    "color": "#FF6B6B"
   },
   {
     "id": 24,
     "name": "欠债袋鼠",
-    "avatar_path": "assets/images/anonymous/kangaroo.svg"
+    "avatar_path": "assets/images/anonymous/kangaroo.svg",
+    "color": "#FF4D6D"
   },
   {
     "id": 25,
     "name": "加班斑马",
-    "avatar_path": "assets/images/anonymous/zebra.svg"
+    "avatar_path": "assets/images/anonymous/zebra.svg",
+    "color": "#FF7A3D"
   },
   {
     "id": 26,
     "name": "摸鱼河马",
-    "avatar_path": "assets/images/anonymous/hippo.svg"
+    "avatar_path": "assets/images/anonymous/hippo.svg",
+    "color": "#FFD84D"
   },
   {
     "id": 27,
     "name": "掉线犀牛",
-    "avatar_path": "assets/images/anonymous/rhino.svg"
+    "avatar_path": "assets/images/anonymous/rhino.svg",
+    "color": "#B8FF3D"
   },
   {
     "id": 28,
     "name": "泡澡海豚",
-    "avatar_path": "assets/images/anonymous/dolphin.svg"
+    "avatar_path": "assets/images/anonymous/dolphin.svg",
+    "color": "#55F28B"
   },
   {
     "id": 29,
     "name": "薄荷鲸鱼",
-    "avatar_path": "assets/images/anonymous/whale.svg"
+    "avatar_path": "assets/images/anonymous/whale.svg",
+    "color": "#35F0B0"
   },
   {
     "id": 30,
     "name": "蓝莓海豹",
-    "avatar_path": "assets/images/anonymous/seal.svg"
+    "avatar_path": "assets/images/anonymous/seal.svg",
+    "color": "#35E8E8"
   },
   {
     "id": 31,
     "name": "失眠海龟",
-    "avatar_path": "assets/images/anonymous/turtle.svg"
+    "avatar_path": "assets/images/anonymous/turtle.svg",
+    "color": "#36BFFF"
   },
   {
     "id": 32,
     "name": "雪糕企鹅",
-    "avatar_path": "assets/images/anonymous/penguin.svg"
+    "avatar_path": "assets/images/anonymous/penguin.svg",
+    "color": "#5B8CFF"
   },
   {
     "id": 33,
     "name": "复读鹦鹉",
-    "avatar_path": "assets/images/anonymous/parrot.svg"
+    "avatar_path": "assets/images/anonymous/parrot.svg",
+    "color": "#7C6CFF"
   },
   {
     "id": 34,
     "name": "低糖麻雀",
-    "avatar_path": "assets/images/anonymous/sparrow.svg"
+    "avatar_path": "assets/images/anonymous/sparrow.svg",
+    "color": "#A66BFF"
   },
   {
     "id": 35,
     "name": "泡面燕子",
-    "avatar_path": "assets/images/anonymous/swallow.svg"
+    "avatar_path": "assets/images/anonymous/swallow.svg",
+    "color": "#D66BFF"
   },
   {
     "id": 36,
     "name": "生锈老鹰",
-    "avatar_path": "assets/images/anonymous/eagle.svg"
+    "avatar_path": "assets/images/anonymous/eagle.svg",
+    "color": "#FF62D0"
   },
   {
     "id": 37,
     "name": "折纸孔雀",
-    "avatar_path": "assets/images/anonymous/peacock.svg"
+    "avatar_path": "assets/images/anonymous/peacock.svg",
+    "color": "#FF5C9A"
   },
   {
     "id": 38,
     "name": "冷萃天鹅",
-    "avatar_path": "assets/images/anonymous/swan.svg"
+    "avatar_path": "assets/images/anonymous/swan.svg",
+    "color": "#FF9F43"
   },
   {
     "id": 39,
     "name": "火锅鸳鸯",
-    "avatar_path": "assets/images/anonymous/mandarin-duck.svg"
+    "avatar_path": "assets/images/anonymous/mandarin-duck.svg",
+    "color": "#E8FF4A"
   },
   {
     "id": 40,
     "name": "快递鸵鸟",
-    "avatar_path": "assets/images/anonymous/ostrich.svg"
+    "avatar_path": "assets/images/anonymous/ostrich.svg",
+    "color": "#72FF57"
   },
   {
     "id": 41,
     "name": "泡沫金鱼",
-    "avatar_path": "assets/images/anonymous/goldfish.svg"
+    "avatar_path": "assets/images/anonymous/goldfish.svg",
+    "color": "#28D7A8"
   },
   {
     "id": 42,
     "name": "违章鲤鱼",
-    "avatar_path": "assets/images/anonymous/carp.svg"
+    "avatar_path": "assets/images/anonymous/carp.svg",
+    "color": "#2ED6FF"
   },
   {
     "id": 43,
     "name": "迷路鲨鱼",
-    "avatar_path": "assets/images/anonymous/shark.svg"
+    "avatar_path": "assets/images/anonymous/shark.svg",
+    "color": "#638BFF"
   },
   {
     "id": 44,
     "name": "漏电章鱼",
-    "avatar_path": "assets/images/anonymous/octopus.svg"
+    "avatar_path": "assets/images/anonymous/octopus.svg",
+    "color": "#9B7BFF"
   },
   {
     "id": 45,
     "name": "发霉鱿鱼",
-    "avatar_path": "assets/images/anonymous/squid.svg"
+    "avatar_path": "assets/images/anonymous/squid.svg",
+    "color": "#E85DFF"
   },
   {
     "id": 46,
     "name": "打折螃蟹",
-    "avatar_path": "assets/images/anonymous/crab.svg"
+    "avatar_path": "assets/images/anonymous/crab.svg",
+    "color": "#FF6B6B"
   }
 ]
