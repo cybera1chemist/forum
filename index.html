@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090711">
+    <title>炼金术师论坛 — 连接已建立</title>
+    <link rel="stylesheet" href="assets/css/forum.css">
+    <script src="assets/js/navigation.js" defer></script>
+    <script src="assets/js/forum.js" defer></script>
+  </head>
+  <body data-page="home">
+    <div class="ambient ambient--home" aria-hidden="true"></div>
+    <div id="site-navigation"></div>
+    <div class="site-shell">
+      <main>
+        <section class="community-toolbar" aria-label="活跃用户和搜索">
+          <div class="active-users">
+            <span class="active-users-count">6</span>
+            <span class="active-users-label"><span class="active-users-term" tabindex="0" title="活跃用户指的是发过帖子或回复过帖子的用户">本周活跃用户</span></span>
+          </div>
+          <form class="search-box" data-search-form>
+            <span class="search-icon" aria-hidden="true"></span>
+            <label class="visually-hidden" for="home-search">搜索帖子关键词</label>
+            <input id="home-search" type="search" placeholder="搜索帖子、关键词…" autocomplete="off">
+            <button type="submit">搜索</button>
+          </form>
+        </section>
+        <p class="stats-note">当前仅显示最近一周的帖子。想查看更久远的帖子，请搜索关键词。</p>
+
+        <section class="content-section board-section">
+          <div class="section-heading">
+            <h2>讨论<span>版块</span></h2>
+          </div>
+          <div class="board-tabs" role="tablist" aria-label="按版块筛选讨论">
+            <button class="board-tab is-active" type="button" role="tab" id="board-tab-all" aria-selected="true" aria-controls="recent-posts" data-board="all">全部</button>
+            <button class="board-tab" type="button" role="tab" id="board-tab-chat" aria-selected="false" aria-controls="recent-posts" tabindex="-1" data-board="闲聊广场">闲聊广场</button>
+            <button class="board-tab" type="button" role="tab" id="board-tab-life" aria-selected="false" aria-controls="recent-posts" tabindex="-1" data-board="校园生活">校园生活</button>
+            <button class="board-tab" type="button" role="tab" id="board-tab-interest" aria-selected="false" aria-controls="recent-posts" tabindex="-1" data-board="兴趣同好">兴趣同好</button>
+            <button class="board-tab" type="button" role="tab" id="board-tab-notice" aria-selected="false" aria-controls="recent-posts" tabindex="-1" data-board="站务公告">站务公告</button>
+          </div>
+          <div id="recent-posts" class="post-list" aria-live="polite">
+            <div class="loading-row"><span class="loader"></span>正在接收社区信号…</div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <a class="footer-brand" href="index.html">炼金术师论坛 <span>© 2026</span></a>
+      </footer>
+    </div>
+    <div class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

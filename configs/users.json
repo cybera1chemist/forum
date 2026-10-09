@@ -1,0 +1,20 @@
+{
+    "admin":{
+        "id": 0,
+        "nickname": "萌萌小兔兔宝宝",
+        "gender": "male"
+    },
+    "user1": {
+        "id": 1,
+        "nickname": "小贝",
+        "gender": "male"
+    },
+    
+    "user2": {
+        "id": 2,
+        "nickname": "balabala",
+        "gender": "male"
+    }
+
+    
+}

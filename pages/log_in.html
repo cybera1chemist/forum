@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090711">
+    <title>登录 — 炼金术师论坛</title>
+    <link rel="stylesheet" href="../assets/css/forum.css">
+    <script src="../assets/js/forum.js" defer></script>
+  </head>
+  <body data-page="login">
+    <div class="ambient ambient--login" aria-hidden="true"></div>
+    <main class="login-shell">
+      <div class="login-decoration" aria-hidden="true">
+        <span class="deco-ring deco-ring--one"></span>
+        <span class="deco-ring deco-ring--two"></span>
+        <span class="deco-cross deco-cross--one">＋</span>
+        <span class="deco-cross deco-cross--two">＋</span>
+        <span class="deco-cross deco-cross--three">✳</span>
+        <span class="deco-line"></span>
+      </div>
+
+      <section class="login-card" aria-labelledby="login-title">
+        <div class="brand-mark login-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h1 class="login-title" id="login-title">登录</h1>
+
+        <form class="login-form" data-login-form>
+          <label for="username">账号</label>
+          <div class="input-wrap">
+            <span class="input-icon" aria-hidden="true">◎</span>
+            <input id="username" name="username" type="text" placeholder="请输入账号" autocomplete="username" required>
+          </div>
+          <label for="password">密码</label>
+          <div class="input-wrap">
+            <span class="input-icon input-icon--lock" aria-hidden="true">⌑</span>
+            <input id="password" name="password" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+            <button class="password-toggle" type="button" aria-label="显示密码" data-password-toggle>显示</button>
+          </div>
+          <p class="form-message" data-login-message role="status" aria-live="polite"></p>
+          <button class="login-submit" type="submit">登录</button>
+        </form>
+      </section>
+    </main>
+
+    <section class="login-success" data-login-success hidden aria-live="polite">
+      <div class="success-panel">
+        <span class="success-check" aria-hidden="true">✓</span>
+        <h2>登录成功</h2>
+        <div class="success-user">
+          <img src="../assets/images/rabbit_avatar.jpg" alt="">
+          <div><strong>【管理员】萌萌小兔兔宝宝</strong></div>
+        </div>
+        <p class="success-loading"><span class="loader"></span>加载中……</p>
+      </div>
+    </section>
+  </body>
+</html>

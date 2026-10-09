@@ -1,0 +1,24 @@
+{
+    "meta": {
+        "board": "站务公告",
+        "isAnonymous": true,
+        "pinned": true,
+        "title": "征集新的匿名模式昵称 ฅ^•ﻌ•^ฅ ~",
+        "author_id": 0
+    },
+    
+  "content": "balabala？",
+  
+  "replies": [
+    {
+      "authorId": "1",
+      "content": "balabala。"
+    },
+    {
+      "authorId": "2",
+      "content": "balabala!!!"
+    }
+  ],
+
+  "anonymousIdentities": [1, 2, 3, 4, 5, 6]
+}
