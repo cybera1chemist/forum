@@ -1,11 +1,12 @@
 {
-    "meta": {
-        "board": "站务公告",
-        "isAnonymous": true,
-        "pinned": false,
-        "title": "征集新的匿名模式昵称 ฅ^•ﻌ•^ฅ ~",
-        "author_id": 0,
-        "keywords": ["公告"]
+  "meta": {
+      "board": "站务公告",
+      "isAnonymous": true,
+      "pinned": false,
+      "title": "征集新的匿名模式昵称 ฅ^•ﻌ•^ฅ ~",
+      "author_id": 0,
+      "keywords": ["公告"],
+      "search-only": false
     },
     
   "content": "balabala？",

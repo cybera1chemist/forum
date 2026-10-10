@@ -80,50 +80,35 @@ function initializeLoginPage() {
   });
 }
 
-async function loadRecentPosts() {
-  const postList = document.querySelector("#recent-posts");
-
-  try {
-    const [manifestResponse, usersResponse, anonymousResponse] = await Promise.all([
-      fetch(new URL("texts/posts/index.json", projectRoot)),
-      fetch(new URL("configs/users.json", projectRoot)),
-      fetch(new URL("configs/anonymous.json", projectRoot))
-    ]);
-    if (!manifestResponse.ok) throw new Error(`帖子清单读取失败（HTTP ${manifestResponse.status}）`);
-    if (!usersResponse.ok) throw new Error(`用户资料读取失败（HTTP ${usersResponse.status}）`);
-    if (!anonymousResponse.ok) throw new Error(`匿名身份读取失败（HTTP ${anonymousResponse.status}）`);
-
-    const [filenames, users, anonymousIdentities] = await Promise.all([
-      manifestResponse.json(),
-      usersResponse.json(),
-      anonymousResponse.json()
-    ]);
-    if (!Array.isArray(filenames)) {
-      throw new Error("帖子清单格式错误：内容必须是文件名数组。");
-    }
-    if (!Array.isArray(anonymousIdentities)) {
-      throw new Error("匿名身份配置格式错误：内容必须是数组。");
-    }
-    validateAnonymousIdentities(anonymousIdentities);
-
-    const posts = await Promise.all(filenames.map(async (filename) => {
-      if (typeof filename !== "string" || !filename.endsWith(".json")) {
-        throw new Error("帖子清单格式错误：每项都必须是 JSON 文件名。");
-      }
-      const response = await fetch(new URL(`texts/posts/${encodeURIComponent(filename)}`, projectRoot));
-      if (!response.ok) {
-        throw new Error(`帖子 ${filename} 读取失败（HTTP ${response.status}）`);
-      }
-      const post = await response.json();
-      validateAnonymousMapping(post, filename, anonymousIdentities);
-      return { ...post, filename };
-    }));
-
-    return { posts, users, anonymousIdentities };
-  } catch (error) {
-    postList.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br>请通过静态网页服务器打开论坛，以允许浏览器读取 JSON 文件。</div>`;
-    return null;
+async function loadForumData() {
+  const [filenames, users, anonymousIdentities] = await Promise.all([
+    fetchJson(new URL("texts/posts/index.json", projectRoot), "帖子清单"),
+    fetchJson(new URL("configs/users.json", projectRoot), "用户资料"),
+    fetchJson(new URL("configs/anonymous.json", projectRoot), "匿名身份")
+  ]);
+  if (!Array.isArray(filenames) || !filenames.every((filename) => (
+    typeof filename === "string" && filename.endsWith(".json")
+  ))) {
+    throw new Error("帖子清单格式错误：内容必须是 JSON 文件名数组。");
   }
+  if (!Array.isArray(anonymousIdentities)) {
+    throw new Error("匿名身份配置格式错误：内容必须是数组。");
+  }
+  validateAnonymousIdentities(anonymousIdentities);
+
+  const posts = await Promise.all(filenames.map(async (filename) => {
+    const post = await fetchJson(
+      new URL(`texts/posts/${encodeURIComponent(filename)}`, projectRoot),
+      `帖子 ${filename}`
+    );
+    if (typeof post.meta?.["search-only"] !== "boolean") {
+      throw new Error(`帖子 ${filename} 的格式错误：meta["search-only"] 必须是布尔值。`);
+    }
+    validateAnonymousMapping(post, filename, anonymousIdentities);
+    return { ...post, filename };
+  }));
+
+  return { posts, users, anonymousIdentities };
 }
 
 function validateAnonymousMapping(post, filename, anonymousIdentities) {
@@ -190,9 +175,9 @@ function getAuthorName(post, users, anonymousIdentities) {
 
 function renderPosts(posts, selectedBoard, users, anonymousIdentities) {
   const postList = document.querySelector("#recent-posts");
-  const filteredPosts = selectedBoard === "all"
-    ? posts
-    : posts.filter((post) => (post.meta?.board || "未分类") === selectedBoard);
+  const filteredPosts = posts
+    .filter((post) => post.meta?.["search-only"] === false)
+    .filter((post) => selectedBoard === "all" || (post.meta?.board || "未分类") === selectedBoard);
 
   if (filteredPosts.length === 0) {
     const emptyMessage = selectedBoard === "all"
@@ -202,25 +187,61 @@ function renderPosts(posts, selectedBoard, users, anonymousIdentities) {
     return;
   }
 
-  postList.innerHTML = filteredPosts.map((post) => {
+  renderPostList(postList, filteredPosts, users, anonymousIdentities);
+}
+
+function renderPostList(postList, posts, users, anonymousIdentities) {
+  postList.innerHTML = posts.map((post) => {
     const meta = post.meta ?? {};
     const title = escapeHTML(meta.title || "未命名帖子");
     const board = escapeHTML(meta.board || "未分类");
     const authorName = escapeHTML(getAuthorName(post, users, anonymousIdentities));
     const replyCount = Array.isArray(post.replies) ? post.replies.length : 0;
     const pinned = meta.pinned ? '<span class="post-tag post-tag--pinned">置顶</span>' : "";
+    const postUrl = new URL("pages/post.html", projectRoot);
+    postUrl.searchParams.set("post", post.filename);
 
     return `
       <article class="post-row">
         <div class="post-main">
           <div class="post-meta">${pinned}<span class="post-tag">${board}</span></div>
-          <a class="post-title" href="pages/post.html?post=${encodeURIComponent(post.filename)}">${title}</a>
+          <a class="post-title" href="${escapeHTML(postUrl.href)}">${title}</a>
           <p class="post-author">楼主：${authorName}</p>
         </div>
         <span class="post-count">${replyCount} 回复</span>
       </article>
     `;
   }).join("");
+}
+
+function normalizeSearchText(value) {
+  return String(value ?? "").replace(/\s/gu, "").toLowerCase();
+}
+
+function searchPosts(posts, query) {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return [];
+
+  return posts.filter((post) => Array.isArray(post.meta?.keywords)
+    && post.meta.keywords.some((keyword) => (
+      normalizeSearchText(keyword).includes(normalizedQuery)
+    )));
+}
+
+function initializeSearchForm(form) {
+  const input = form.querySelector('input[type="search"]');
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!normalizeSearchText(input.value)) {
+      showToast("请输入要搜索的关键词。");
+      input.focus();
+      return;
+    }
+
+    const searchUrl = new URL("pages/search.html", projectRoot);
+    searchUrl.searchParams.set("q", input.value.trim());
+    window.location.assign(searchUrl.href);
+  });
 }
 
 function initializeHomePage() {
@@ -233,18 +254,16 @@ function initializeHomePage() {
   let users = {};
   let anonymousIdentities = [];
   let selectedBoard = "all";
-  loadRecentPosts().then((loadedPosts) => {
-    if (!loadedPosts) return;
+  loadForumData().then((loadedPosts) => {
     posts = loadedPosts.posts;
     users = loadedPosts.users;
     anonymousIdentities = loadedPosts.anonymousIdentities;
     renderPosts(posts, selectedBoard, users, anonymousIdentities);
+  }).catch((error) => {
+    document.querySelector("#recent-posts").innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br>请通过静态网页服务器打开论坛，以允许浏览器读取 JSON 文件。</div>`;
   });
 
-  document.querySelector("[data-search-form]").addEventListener("submit", (event) => {
-    event.preventDefault();
-    showToast("搜索功能尚未开放，敬请期待。");
-  });
+  initializeSearchForm(document.querySelector("[data-search-form]"));
 
   document.querySelectorAll(".board-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
@@ -258,6 +277,41 @@ function initializeHomePage() {
       renderPosts(posts, selectedBoard, users, anonymousIdentities);
     });
   });
+}
+
+async function initializeSearchPage() {
+  if (localStorage.getItem(AUTH_STORAGE_KEY) !== "true") {
+    window.location.replace(new URL("pages/log_in.html", projectRoot).href);
+    return;
+  }
+
+  const form = document.querySelector("[data-search-form]");
+  const input = form.querySelector('input[type="search"]');
+  const summary = document.querySelector("#search-summary");
+  const results = document.querySelector("#search-results");
+  const query = new URLSearchParams(window.location.search).get("q") ?? "";
+  input.value = query;
+  initializeSearchForm(form);
+
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) {
+    summary.textContent = "请输入关键词，搜索相关帖子。";
+    results.innerHTML = '<div class="empty-row">输入关键词后即可查找帖子。</div>';
+    return;
+  }
+  summary.textContent = `与「${query.trim()}」有关的帖子有：`;
+
+  try {
+    const { posts, users, anonymousIdentities } = await loadForumData();
+    const matches = searchPosts(posts, query);
+    if (matches.length === 0) {
+      results.innerHTML = '<div class="empty-row">没有找到包含该关键词的帖子。</div>';
+      return;
+    }
+    renderPostList(results, matches, users, anonymousIdentities);
+  } catch (error) {
+    results.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br>请通过静态网页服务器打开论坛，以允许浏览器读取 JSON 文件。</div>`;
+  }
 }
 
 function renderAuthorAvatar(identity) {
@@ -376,3 +430,4 @@ const pageType = document.body.dataset.page;
 if (pageType === "login") initializeLoginPage();
 if (pageType === "home") initializeHomePage();
 if (pageType === "post") initializePostPage();
+if (pageType === "search") initializeSearchPage();
