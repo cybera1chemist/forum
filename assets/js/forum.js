@@ -81,22 +81,18 @@ function initializeLoginPage() {
 }
 
 async function loadForumData() {
-  const [filenames, users, anonymousIdentities] = await Promise.all([
+  const [postIndex, users, anonymousIdentities] = await Promise.all([
     fetchJson(new URL("texts/posts/index.json", projectRoot), "帖子清单"),
     fetchJson(new URL("configs/users.json", projectRoot), "用户资料"),
     fetchJson(new URL("configs/anonymous.json", projectRoot), "匿名身份")
   ]);
-  if (!Array.isArray(filenames) || !filenames.every((filename) => (
-    typeof filename === "string" && filename.endsWith(".json")
-  ))) {
-    throw new Error("帖子清单格式错误：内容必须是 JSON 文件名数组。");
-  }
+  const postEntries = validatePostIndex(postIndex);
   if (!Array.isArray(anonymousIdentities)) {
     throw new Error("匿名身份配置格式错误：内容必须是数组。");
   }
   validateAnonymousIdentities(anonymousIdentities);
 
-  const posts = await Promise.all(filenames.map(async (filename) => {
+  const posts = await Promise.all(postEntries.map(async ({ id, filename }) => {
     const post = await fetchJson(
       new URL(`texts/posts/${encodeURIComponent(filename)}`, projectRoot),
       `帖子 ${filename}`
@@ -105,10 +101,28 @@ async function loadForumData() {
       throw new Error(`帖子 ${filename} 的格式错误：meta["search-only"] 必须是布尔值。`);
     }
     validateAnonymousMapping(post, filename, anonymousIdentities);
-    return { ...post, filename };
+    return { ...post, id, filename };
   }));
 
   return { posts, users, anonymousIdentities };
+}
+
+function validatePostIndex(postIndex) {
+  if (
+    !postIndex
+    || typeof postIndex !== "object"
+    || Array.isArray(postIndex)
+    || Object.keys(postIndex).length === 0
+    || Object.entries(postIndex).some(([id, filename]) => (
+      !/^[\da-f]{12}$/i.test(id)
+      || typeof filename !== "string"
+      || !filename.endsWith(".json")
+    ))
+  ) {
+    throw new Error("帖子清单格式错误：必须是由 12 位十六进制帖子 ID 映射到 JSON 文件名的对象。");
+  }
+
+  return Object.entries(postIndex).map(([id, filename]) => ({ id, filename }));
 }
 
 function validateAnonymousMapping(post, filename, anonymousIdentities) {
@@ -199,7 +213,7 @@ function renderPostList(postList, posts, users, anonymousIdentities) {
     const replyCount = Array.isArray(post.replies) ? post.replies.length : 0;
     const pinned = meta.pinned ? '<span class="post-tag post-tag--pinned">置顶</span>' : "";
     const postUrl = new URL("pages/post.html", projectRoot);
-    postUrl.searchParams.set("post", post.filename);
+    postUrl.searchParams.set("p", post.id);
 
     return `
       <article class="post-row">
@@ -389,22 +403,21 @@ async function initializePostPage() {
   }
 
   const target = document.querySelector("#post-detail");
-  const filename = new URLSearchParams(window.location.search).get("post");
-  if (!filename) {
+  const postId = new URLSearchParams(window.location.search).get("p");
+  if (!postId) {
     target.innerHTML = '<div class="error-row">未指定帖子。<a href="../index.html">返回论坛主页</a></div>';
     return;
   }
 
   try {
-    const [filenames, users, anonymousIdentities] = await Promise.all([
+    const [postIndex, users, anonymousIdentities] = await Promise.all([
       fetchJson(new URL("texts/posts/index.json", projectRoot), "帖子清单"),
       fetchJson(new URL("configs/users.json", projectRoot), "用户资料"),
       fetchJson(new URL("configs/anonymous.json", projectRoot), "匿名身份")
     ]);
-    if (!Array.isArray(filenames) || !filenames.every((item) => typeof item === "string")) {
-      throw new Error("帖子清单格式错误：内容必须是文件名数组。");
-    }
-    if (!filenames.includes(filename)) {
+    const postEntries = validatePostIndex(postIndex);
+    const postEntry = postEntries.find((entry) => entry.id === postId);
+    if (!postEntry) {
       throw new Error("找不到这篇帖子，请从论坛主页重新选择。");
     }
     if (!Array.isArray(anonymousIdentities)) {
@@ -413,12 +426,12 @@ async function initializePostPage() {
     validateAnonymousIdentities(anonymousIdentities);
 
     const post = await fetchJson(
-      new URL(`texts/posts/${encodeURIComponent(filename)}`, projectRoot),
-      `帖子 ${filename}`
+      new URL(`texts/posts/${encodeURIComponent(postEntry.filename)}`, projectRoot),
+      `帖子 ${postEntry.filename}`
     );
-    validateAnonymousMapping(post, filename, anonymousIdentities);
+    validateAnonymousMapping(post, postEntry.filename, anonymousIdentities);
     if (!post.meta || !Array.isArray(post.replies) || typeof post.content !== "string") {
-      throw new Error(`帖子 ${filename} 的内容格式错误。`);
+      throw new Error(`帖子 ${postEntry.filename} 的内容格式错误。`);
     }
     renderPostDetails(post, users, anonymousIdentities);
   } catch (error) {
