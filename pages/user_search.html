@@ -16,34 +16,44 @@
       <main class="tool-page user-search-page">
         <p class="tool-eyebrow">ADMIN CONSOLE / 02</p>
         <h1>查询用户</h1>
-        <p class="tool-description">填写用户资料以解除其匿名状态。</p>
 
         <form class="user-query-form" data-user-query-form>
-          <div class="query-field">
+          <div class="query-field query-field--full">
             <label for="query-nickname">用户名</label>
             <input id="query-nickname" name="nickname" type="text" autocomplete="off" required>
           </div>
-          <div class="query-field">
-            <label for="query-gender">性别</label>
-            <select id="query-gender" name="gender" required>
-              <option value="">请选择</option>
-              <option value="female">女</option>
-              <option value="male">男</option>
-              <option value="other">其他</option>
-            </select>
-          </div>
-          <div class="query-field">
+          <fieldset class="query-field query-choice-row">
+            <legend>性别</legend>
+            <div class="gender-choices">
+              <label class="choice-option" for="gender-female">
+                <input id="gender-female" name="gender" type="radio" value="female" required>
+                <span class="choice-indicator" aria-hidden="true"></span>
+                <span>女</span>
+              </label>
+              <label class="choice-option" for="gender-male">
+                <input id="gender-male" name="gender" type="radio" value="male">
+                <span class="choice-indicator" aria-hidden="true"></span>
+                <span>男</span>
+              </label>
+              <label class="choice-option" for="gender-other">
+                <input id="gender-other" name="gender" type="radio" value="other">
+                <span class="choice-indicator" aria-hidden="true"></span>
+                <span>其他</span>
+              </label>
+            </div>
+          </fieldset>
+          <div class="query-field query-field--full">
             <label for="query-home">家乡省份</label>
-            <select id="query-home" name="home" required>
-              <option value="">请选择</option>
-            </select>
+            <div class="custom-select">
+              <select id="query-home" name="home" required>
+                <option value="">请选择省份</option>
+              </select>
+            </div>
           </div>
-          <div class="query-field">
-            <label for="query-job">职业</label>
-            <select id="query-job" name="job" required>
-              <option value="">请选择</option>
-            </select>
-          </div>
+          <fieldset class="query-field query-field--full profession-field">
+            <legend>职业</legend>
+            <div id="profession-options" class="profession-categories"></div>
+          </fieldset>
           <p id="user-query-message" class="form-message" role="status" aria-live="polite"></p>
           <button class="tool-button" type="submit" disabled>提交查询</button>
         </form>

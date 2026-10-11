@@ -17,13 +17,13 @@ const HOME_OPTIONS = [
   ["贵州", "贵州省"],
   ["海南", "海南省"],
   ["河北", "河北省"],
-  ["江苏", "江苏省"],
-  ["江西", "江西省"],
   ["河南", "河南省"],
   ["黑龙江", "黑龙江省"],
   ["湖北", "湖北省"],
   ["湖南", "湖南省"],
   ["吉林", "吉林省"],
+  ["江苏", "江苏省"],
+  ["江西", "江西省"],
   ["辽宁", "辽宁省"],
   ["内蒙古", "内蒙古自治区"],
   ["宁夏", "宁夏回族自治区"],
@@ -42,20 +42,69 @@ const HOME_OPTIONS = [
   ["浙江", "浙江省"]
 ];
 
-const PROFESSION_OPTIONS = [
-  "厨师", "音乐制作人", "漫画家", "玄学顾问", "小说家", "程序员", "游戏制作人",
-  "医生", "护士", "药剂师", "心理咨询师", "教师", "教授", "研究员", "科学家",
-  "工程师", "建筑师", "设计师", "平面设计师", "UI设计师", "插画师", "画家",
-  "摄影师", "导演", "编剧", "演员", "歌手", "音乐家", "作曲家", "记者", "编辑",
-  "翻译", "律师", "法官", "警察", "消防员", "军人", "公务员", "企业家", "经理",
-  "会计师", "金融分析师", "银行职员", "销售", "市场营销专员", "公关专员",
-  "人力资源专员", "行政专员", "客服", "产品经理", "项目经理", "数据分析师",
-  "数据科学家", "网络安全工程师", "软件工程师", "前端工程师", "后端工程师",
-  "运维工程师", "游戏策划", "游戏美术", "游戏程序员", "动画师", "3D建模师",
-  "影视后期", "主播", "视频创作者", "网文作者", "图书管理员", "考古学家",
-  "历史学家", "社会工作者", "导游", "旅行规划师", "餐饮服务员", "面包师",
-  "调酒师", "农民", "园艺师", "兽医", "宠物美容师", "维修技师", "电工",
-  "机械师", "建筑工人", "司机", "飞行员", "船员", "快递员", "物流专员", "其他"
+const PROFESSION_CATEGORIES = [
+  {
+    name: "文化与创作",
+    options: [
+      "漫画家", "小说家", "音乐制作人", "摄影师", "导演", "演员", "记者",
+      "翻译", "文物修复师", "游戏制作人"
+    ]
+  },
+  {
+    name: "科技与研究",
+    options: [
+      "程序员", "社会科学家", "数据分析师", "天文学家", "生物学家",
+      "地质学家", "考古学家", "历史学家", "气象学家", "食品安全检验员"
+    ]
+  },
+  {
+    name: "商业与组织",
+    options: [
+      "企业家", "会计师", "金融分析师", "银行柜员", "市场营销专员",
+      "人力资源专员", "销售代表", "公关专员", "行政专员", "采购专员",
+      "客服专员", "产品经理"
+    ]
+  },
+  {
+    name: "医疗与健康",
+    options: [
+      "医生", "护士", "药剂师", "兽医", "营养师",
+      "物理治疗师", "验光师", "助产士"
+    ]
+  },
+  {
+    name: "法律与公共服务",
+    options: [
+      "律师", "法官", "警察", "消防员", "军人", "社会工作者",
+      "外交官", "公证员"
+    ]
+  },
+  {
+    name: "教育与知识服务",
+    options: [
+      "中小学教师", "图书管理员", "职业规划师", "博物馆讲解员",
+      "心理咨询师", "玄学顾问", "情感导师", "培训机构老师"
+    ]
+  },
+  {
+    name: "餐饮与生活服务",
+    options: [
+      "厨师", "咖啡师", "茶艺师", "餐厅服务员", "宠物美容师",
+      "理发师", "家政服务员", "导游", "健身教练"
+    ]
+  },
+  {
+    name: "交通与物流",
+    options: [
+      "飞行员", "船员", "铁路调度员", "物流专员", "空中交通管制员"
+    ]
+  },
+  {
+    name: "工程与维修",
+    options: [
+      "汽车维修技师", "电工", "建筑工人", "焊接技师", "电梯维修技师"
+    ]
+  }
 ];
 
 function showToast(message) {
@@ -573,12 +622,60 @@ function genderLabel(gender) {
   return ({ female: "女", male: "男", other: "其他" })[gender] ?? gender ?? "未填写";
 }
 
+function shuffleOptions(options) {
+  const shuffled = [...options];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
 function populateSelect(select, options) {
   options.forEach(([value, label]) => {
     const option = document.createElement("option");
     option.value = value;
     option.textContent = label;
     select.append(option);
+  });
+}
+
+function renderProfessionOptions(container) {
+  PROFESSION_CATEGORIES.forEach((category, categoryIndex) => {
+    const fieldset = document.createElement("fieldset");
+    fieldset.className = "profession-category";
+
+    const legend = document.createElement("legend");
+    legend.textContent = category.name;
+    fieldset.append(legend);
+
+    const choices = document.createElement("div");
+    choices.className = "profession-choices";
+    shuffleOptions(category.options).forEach((job) => {
+      const optionId = `profession-${categoryIndex}-${category.options.indexOf(job)}`;
+      const label = document.createElement("label");
+      label.className = "profession-option";
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "job";
+      input.value = job;
+      input.id = optionId;
+      input.required = categoryIndex === 0 && choices.childElementCount === 0;
+
+      const indicator = document.createElement("span");
+      indicator.className = "profession-option-indicator";
+      indicator.setAttribute("aria-hidden", "true");
+
+      const text = document.createElement("span");
+      text.textContent = job;
+
+      label.htmlFor = optionId;
+      label.append(input, indicator, text);
+      choices.append(label);
+    });
+    fieldset.append(choices);
+    container.append(fieldset);
   });
 }
 
@@ -598,6 +695,131 @@ function renderQueriedUser(user, result) {
   result.hidden = false;
 }
 
+function validateMessage(message, filename, usersByNickname) {
+  if (
+    !message
+    || typeof message.speaker1 !== "string"
+    || typeof message.speaker2 !== "string"
+    || message.speaker1 === message.speaker2
+    || !usersByNickname.has(message.speaker1)
+    || !usersByNickname.has(message.speaker2)
+    || !Array.isArray(message.dialogs)
+  ) {
+    throw new Error(`私信 ${filename} 的参与者或对话格式错误。`);
+  }
+
+  message.dialogs.forEach((dialog, index) => {
+    if (
+      !dialog
+      || typeof dialog.time !== "string"
+      || ![1, 2].includes(dialog.start_from_speaker)
+      || !Array.isArray(dialog.content)
+      || dialog.content.length === 0
+      || dialog.content.some((content) => typeof content !== "string")
+    ) {
+      throw new Error(`私信 ${filename} 的第 ${index + 1} 段对话格式错误。`);
+    }
+  });
+
+  return {
+    ...message,
+    speaker1User: usersByNickname.get(message.speaker1),
+    speaker2User: usersByNickname.get(message.speaker2)
+  };
+}
+
+function renderMessageAvatar(user) {
+  const avatarUrl = user.avatar_path
+    ? escapeHTML(new URL(user.avatar_path, projectRoot).href)
+    : "";
+  if (avatarUrl) {
+    return `<img class="message-avatar" src="${avatarUrl}" alt="">`;
+  }
+  return `<span class="message-avatar message-avatar--fallback" aria-hidden="true">${escapeHTML(user.nickname.slice(0, 1))}</span>`;
+}
+
+function renderConversation(message, viewerId) {
+  const speaker1 = message.speaker1User;
+  const speaker2 = message.speaker2User;
+  const dialogs = message.dialogs.map((dialog) => {
+    const firstSpeakerId = dialog.start_from_speaker;
+    const firstSpeaker = firstSpeakerId === 1 ? speaker1 : speaker2;
+    return `
+      <section class="message-dialog">
+        <h2 class="message-time">${escapeHTML(dialog.time)}</h2>
+        <div class="message-dialog-list">
+          ${dialog.content.map((content, index) => {
+            const sender = index % 2 === 0
+              ? firstSpeaker
+              : firstSpeaker === speaker1 ? speaker2 : speaker1;
+            const isViewer = Number(sender.id) === viewerId;
+            return `
+              <article class="message-line${isViewer ? " message-line--right" : " message-line--left"}">
+                ${renderMessageAvatar(sender)}
+                <div class="message-bubble-wrap">
+                  <span class="message-sender">${escapeHTML(sender.nickname)}</span>
+                  <p class="message-bubble">${escapeHTML(content)}</p>
+                </div>
+              </article>
+            `;
+          }).join("")}
+        </div>
+      </section>
+    `;
+  }).join("");
+
+  return `<article class="message-conversation">${dialogs}</article>`;
+}
+
+function renderConversationList(conversations, viewerId, selectedId) {
+  return conversations.map((message) => {
+    const otherSpeaker = message.participants.find((participant) => (
+      Number(participant.id) !== viewerId
+    ));
+    const lastDialog = message.dialogs[message.dialogs.length - 1];
+    const preview = lastDialog.content[lastDialog.content.length - 1];
+    const avatar = renderMessageAvatar(otherSpeaker);
+    const selected = message.id === selectedId;
+    return `
+      <button
+        class="conversation-tab${selected ? " is-active" : ""}"
+        type="button"
+        role="tab"
+        id="conversation-tab-${escapeHTML(message.id)}"
+        aria-selected="${selected}"
+        aria-controls="message-conversation-panel"
+        data-message-id="${escapeHTML(message.id)}"
+      >
+        ${avatar}
+        <span class="conversation-tab-copy">
+          <strong>${escapeHTML(otherSpeaker.nickname)}</strong>
+          <small>${escapeHTML(preview)}</small>
+        </span>
+      </button>
+    `;
+  }).join("");
+}
+
+function selectConversation(conversations, viewerId, messageId) {
+  const conversation = conversations.find((message) => message.id === messageId);
+  if (!conversation) return;
+
+  document.querySelectorAll(".conversation-tab").forEach((tab) => {
+    const selected = tab.dataset.messageId === messageId;
+    tab.classList.toggle("is-active", selected);
+    tab.setAttribute("aria-selected", String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  });
+
+  const panel = document.querySelector("#message-conversation-panel");
+  panel.innerHTML = renderConversation(conversation, viewerId);
+  panel.setAttribute("aria-labelledby", `conversation-tab-${messageId}`);
+
+  const url = new URL(window.location.href);
+  url.searchParams.set("m", messageId);
+  window.history.replaceState(null, "", url.href);
+}
+
 function initializeAdminPage() {
   if (!requireAuthentication()) return;
 
@@ -613,10 +835,10 @@ async function initializeUserSearchPage() {
   const message = document.querySelector("#user-query-message");
   const result = document.querySelector("#user-query-result");
   const homeSelect = form.querySelector('[name="home"]');
-  const jobSelect = form.querySelector('[name="job"]');
+  const professionOptions = form.querySelector("#profession-options");
   const submitButton = form.querySelector("button[type='submit']");
   populateSelect(homeSelect, HOME_OPTIONS);
-  populateSelect(jobSelect, PROFESSION_OPTIONS.map((job) => [job, job]));
+  renderProfessionOptions(professionOptions);
 
   try {
     const users = await loadUsersForQuery();
@@ -723,16 +945,152 @@ async function initializeUserPage() {
             <div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(value)}</dd></div>
           `).join("")}
         </dl>
-        <button class="tool-button tool-button--secondary" type="button" data-profile-messages>
+        <a class="tool-button tool-button--secondary profile-messages-link" data-profile-messages>
           查看私信（仅管理员可用）
-        </button>
+          <span aria-hidden="true">↗</span>
+        </a>
       </div>
     `;
-    target.querySelector("[data-profile-messages]").addEventListener("click", () => {
-      showToast("用户私信功能暂时不可用。");
-    });
+    const messagesUrl = new URL("pages/messages.html", projectRoot);
+    messagesUrl.searchParams.set("id", String(user.id));
+    target.querySelector("[data-profile-messages]").href = messagesUrl.href;
   } catch (error) {
     target.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br><a href="../index.html">返回论坛主页</a></div>`;
+  }
+}
+
+async function initializeMessagesPage() {
+  if (!requireAuthentication()) return;
+
+  const target = document.querySelector("#messages-content");
+  const rawUserId = new URLSearchParams(window.location.search).get("id");
+  const viewerId = rawUserId === null || rawUserId.trim() === "" ? NaN : Number(rawUserId);
+  if (!Number.isInteger(viewerId) || viewerId < 0) {
+    target.innerHTML = '<div class="error-row">未指定有效用户。<a href="../index.html">返回论坛主页</a></div>';
+    return;
+  }
+
+  if (viewerId === 0) {
+    target.innerHTML = `
+      <section class="messages-empty">
+        <p class="tool-eyebrow">PRIVATE MESSAGES</p>
+        <h1>管理员私信</h1>
+        <p>收件箱目前没有私信。</p>
+      </section>
+    `;
+    return;
+  }
+
+  try {
+    const [userConfig, messageIndex] = await Promise.all([
+      fetchJson(new URL("configs/users.json", projectRoot), "用户资料"),
+      fetchJson(new URL("texts/messages/index.json", projectRoot), "私信清单")
+    ]);
+    if (!userConfig || typeof userConfig !== "object" || Array.isArray(userConfig)) {
+      throw new Error("用户资料格式错误：内容必须是对象。");
+    }
+    if (!messageIndex || typeof messageIndex !== "object" || Array.isArray(messageIndex)) {
+      throw new Error("私信清单格式错误：内容必须是对象。");
+    }
+
+    const usersByNickname = new Map(
+      Object.values(userConfig).map((user) => [user.nickname, user])
+    );
+    const user = Object.values(userConfig).find((candidate) => Number(candidate.id) === viewerId);
+    if (!user) throw new Error("找不到该用户。");
+
+    const entries = Object.entries(messageIndex);
+    if (entries.some(([messageId, filename]) => (
+      !/^msg-[\da-z-]+$/i.test(messageId)
+      || typeof filename !== "string"
+      || !/^msg-[\da-z-]+\.json$/i.test(filename)
+    ))) {
+      throw new Error("私信清单格式错误：ID 或文件名格式无效。");
+    }
+
+    const conversations = await Promise.all(entries.map(async ([id, filename]) => {
+      const rawMessage = await fetchJson(
+        new URL(`texts/messages/${encodeURIComponent(filename)}`, projectRoot),
+        `私信 ${filename}`
+      );
+      const message = validateMessage(rawMessage, filename, usersByNickname);
+      return {
+        id,
+        ...message,
+        participants: [message.speaker1User, message.speaker2User]
+      };
+    }));
+
+    const userConversations = conversations.filter((message) => (
+      message.participants.some((participant) => Number(participant.id) === viewerId)
+    ));
+    const unlockedUsers = getUnlockedUserIds();
+    const visibleConversations = userConversations.filter((message) => (
+      message.participants.every((participant) => (
+        Number(participant.id) === 0 || unlockedUsers.has(Number(participant.id))
+      ))
+    ));
+
+    if (visibleConversations.length === 0 && userConversations.length > 0) {
+      target.innerHTML = `
+        <section class="messages-locked">
+          <p class="tool-eyebrow">PRIVATE MESSAGES</p>
+          <h1>私信暂不可查看</h1>
+          <p>只有对话双方的匿名状态都解除后，管理员才能查看这段私信。</p>
+          <a class="tool-button" href="user_search.html">前往查询用户</a>
+        </section>
+      `;
+      return;
+    }
+
+    if (visibleConversations.length === 0) {
+      target.innerHTML = `
+        <section class="messages-empty">
+          <p class="tool-eyebrow">PRIVATE MESSAGES</p>
+          <h1>${escapeHTML(user.nickname)} 的私信</h1>
+          <p>暂时没有可显示的对话。</p>
+          <a class="message-back-link" href="user.html?id=${viewerId}">返回用户主页</a>
+        </section>
+      `;
+      return;
+    }
+
+    const requestedMessageId = new URLSearchParams(window.location.search).get("m");
+    const selectedMessageId = visibleConversations.some((message) => message.id === requestedMessageId)
+      ? requestedMessageId
+      : visibleConversations[0].id;
+    target.innerHTML = `
+      <header class="messages-page-heading">
+        <div>
+          <p class="tool-eyebrow">PRIVATE MESSAGES</p>
+          <h1>${escapeHTML(user.nickname)} 的私信</h1>
+        </div>
+        <a class="message-back-link" href="user.html?id=${viewerId}">返回用户主页</a>
+      </header>
+      <div class="messages-inbox-layout">
+        <aside class="conversation-sidebar">
+          <h2>对话 </h2>
+          <div class="conversation-tabs" role="tablist" aria-label="选择私信对话">
+            ${renderConversationList(visibleConversations, viewerId, selectedMessageId)}
+          </div>
+        </aside>
+        <section
+          id="message-conversation-panel"
+          class="message-conversation-panel"
+          role="tabpanel"
+          aria-live="polite"
+        ></section>
+      </div>
+    `;
+    target.querySelectorAll(".conversation-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        selectConversation(visibleConversations, viewerId, tab.dataset.messageId);
+      });
+    });
+    selectConversation(visibleConversations, viewerId, selectedMessageId);
+    document.title = `${user.nickname} 的私信 — 炼金术师论坛`;
+  } catch (error) {
+    target.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br><a href="user.html?id=${viewerId}">返回用户主页</a></div>`;
   }
 }
 
@@ -744,3 +1102,4 @@ if (pageType === "search") initializeSearchPage();
 if (pageType === "admin") initializeAdminPage();
 if (pageType === "user-search") initializeUserSearchPage();
 if (pageType === "user") initializeUserPage();
+if (pageType === "messages") initializeMessagesPage();
