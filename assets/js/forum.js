@@ -26,6 +26,10 @@ function escapeHTML(value) {
   })[character]);
 }
 
+function formatPostText(value) {
+  return escapeHTML(value).replace(/\*([^*\r\n]+)\*/g, "<strong>$1</strong>");
+}
+
 async function fetchJson(url, description) {
   const response = await fetch(url);
   if (!response.ok) {
@@ -343,7 +347,7 @@ function renderAuthorAvatar(identity) {
 function renderPostDetails(post, users, anonymousIdentities) {
   const target = document.querySelector("#post-detail");
   const meta = post.meta;
-  const title = escapeHTML(meta.title || "未命名帖子");
+  const title = formatPostText(meta.title || "未命名帖子");
   const board = escapeHTML(meta.board || "未分类");
   const author = getAuthorIdentity(post, meta.author_id, users, anonymousIdentities);
   const authorName = escapeHTML(author.name);
@@ -364,7 +368,7 @@ function renderPostDetails(post, users, anonymousIdentities) {
           <div><strong>${authorName}</strong><span>楼主</span></div>
         </div>
       </header>
-      <div class="post-detail-content">${escapeHTML(post.content || "")}</div>
+      <div class="post-detail-content">${formatPostText(post.content || "")}</div>
     </article>
     <section class="post-replies" aria-labelledby="reply-heading">
       <div class="post-replies-heading">
@@ -381,7 +385,7 @@ function renderPostDetails(post, users, anonymousIdentities) {
                   ${renderAuthorAvatar(identity)}
                   <div><strong>${escapeHTML(identity.name)}</strong><span>${index + 2} 楼</span></div>
                 </div>
-                <p>${escapeHTML(reply.content || "")}</p>
+                <p>${formatPostText(reply.content || "")}</p>
               </article>
             `;
           }).join("")

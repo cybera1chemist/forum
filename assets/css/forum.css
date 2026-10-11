@@ -567,6 +567,8 @@ body[data-page="post"] .post-detail-page {
   overflow-wrap: anywhere;
   border-top: 1px solid var(--line);
 }
+.post-detail-content strong,
+.post-reply p strong { color: #c5a8ed; font-weight: 700; }
 
 .post-replies { margin-top: 36px; }
 .post-replies-heading { margin-bottom: 13px; display: flex; align-items: baseline; justify-content: space-between; }
