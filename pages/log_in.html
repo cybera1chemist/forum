@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#090711">
     <title>登录 — 炼金术师论坛</title>
     <link rel="stylesheet" href="../assets/css/forum.css">
+    <script src="../assets/js/avatar-profile-links.js" defer></script>
     <script src="../assets/js/forum.js" defer></script>
   </head>
   <body data-page="login">
@@ -47,11 +48,12 @@
         <span class="success-check" aria-hidden="true">✓</span>
         <h2>登录成功</h2>
         <div class="success-user">
-          <img src="../assets/images/rabbit_avatar.jpg" alt="">
+          <img src="../assets/images/rabbit_avatar.jpg" alt="" data-profile-user-id="0" title="查看萌萌小兔兔宝宝的个人主页">
           <div><strong>【管理员】萌萌小兔兔宝宝</strong></div>
         </div>
         <p class="success-loading"><span class="loader"></span>加载中……</p>
       </div>
     </section>
+    <div class="toast" role="status" aria-live="polite"></div>
   </body>
 </html>

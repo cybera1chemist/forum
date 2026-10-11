@@ -1,5 +1,5 @@
-const LOGIN_USERNAME = "888888";
-const LOGIN_PASSWORD = "888888";
+const LOGIN_USERNAME = "cutecute";
+const LOGIN_PASSWORD = "123456";
 
 const AUTH_STORAGE_KEY = "alchemist-forum-authenticated";
 const UNLOCKED_USERS_STORAGE_KEY = "alchemist-forum-unlocked-users";
@@ -320,13 +320,15 @@ function getAuthorIdentity(post, authorId, users, anonymousIdentities) {
     return {
       name: assignedIdentity?.name ?? "匿名用户",
       avatarPath: assignedIdentity?.avatar_path ?? null,
-      color: assignedIdentity?.color ?? null
+      color: assignedIdentity?.color ?? null,
+      userId: null
     };
   }
 
   return {
     name: author?.nickname ?? "未知用户",
-    avatarPath: author?.avatar_path ?? (Number(authorId) === 0 ? "assets/images/rabbit_avatar.jpg" : null)
+    avatarPath: author?.avatar_path ?? (Number(authorId) === 0 ? "assets/images/rabbit_avatar.jpg" : null),
+    userId: Number(authorId)
   };
 }
 
@@ -476,15 +478,18 @@ async function initializeSearchPage() {
 }
 
 function renderAuthorAvatar(identity) {
+  const profileAttributes = Number.isInteger(identity.userId)
+    ? `data-profile-user-id="${identity.userId}" title="查看${escapeHTML(identity.name)}的个人主页"`
+    : "";
   if (identity.avatarPath) {
     const avatarUrl = escapeHTML(new URL(identity.avatarPath, projectRoot).href);
     if (identity.color) {
       return `<span class="post-detail-avatar post-detail-avatar--anonymous" style="--avatar-color:${identity.color};--avatar-image:url('${avatarUrl}')" role="img" aria-label="${escapeHTML(identity.name)}"></span>`;
     }
-    return `<img class="post-detail-avatar" src="${avatarUrl}" alt="">`;
+    return `<img class="post-detail-avatar" src="${avatarUrl}" alt="" ${profileAttributes}>`;
   }
 
-  return `<span class="post-detail-avatar post-detail-avatar--fallback" aria-hidden="true">${escapeHTML(identity.name.slice(0, 1))}</span>`;
+  return `<span class="post-detail-avatar post-detail-avatar--fallback" aria-hidden="true" ${profileAttributes}>${escapeHTML(identity.name.slice(0, 1))}</span>`;
 }
 
 function renderPostDetails(post, users, anonymousIdentities) {
@@ -618,10 +623,6 @@ function normalizeGender(gender) {
   return ({ "女": "female", "男": "male", "其他": "other" })[gender] ?? gender;
 }
 
-function genderLabel(gender) {
-  return ({ female: "女", male: "男", other: "其他" })[gender] ?? gender ?? "未填写";
-}
-
 function shuffleOptions(options) {
   const shuffled = [...options];
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
@@ -687,7 +688,7 @@ function renderQueriedUser(user, result) {
   result.innerHTML = `
     <p class="query-success-note">资料匹配，已解除该用户的匿名状态。</p>
     <a class="queried-user-card" href="${escapeHTML(profileUrl.href)}">
-      <img src="${avatarUrl}" alt="">
+      <img src="${avatarUrl}" alt="" data-profile-user-id="${Number(user.id)}" title="查看${escapeHTML(user.nickname)}的个人主页">
       <span>${escapeHTML(user.nickname)}</span>
       <span class="queried-user-arrow" aria-hidden="true">↗</span>
     </a>
@@ -729,13 +730,14 @@ function validateMessage(message, filename, usersByNickname) {
 }
 
 function renderMessageAvatar(user) {
+  const profileAttributes = `data-profile-user-id="${Number(user.id)}" title="查看${escapeHTML(user.nickname)}的个人主页"`;
   const avatarUrl = user.avatar_path
     ? escapeHTML(new URL(user.avatar_path, projectRoot).href)
     : "";
   if (avatarUrl) {
-    return `<img class="message-avatar" src="${avatarUrl}" alt="">`;
+    return `<img class="message-avatar" src="${avatarUrl}" alt="" ${profileAttributes}>`;
   }
-  return `<span class="message-avatar message-avatar--fallback" aria-hidden="true">${escapeHTML(user.nickname.slice(0, 1))}</span>`;
+  return `<span class="message-avatar message-avatar--fallback" aria-hidden="true" ${profileAttributes}>${escapeHTML(user.nickname.slice(0, 1))}</span>`;
 }
 
 function renderConversation(message, viewerId) {
@@ -892,73 +894,6 @@ function clearQueryResult() {
   result.hidden = true;
 }
 
-async function initializeUserPage() {
-  if (!requireAuthentication()) return;
-
-  const target = document.querySelector("#user-profile");
-  const rawUserId = new URLSearchParams(window.location.search).get("id");
-  const userId = rawUserId === null || rawUserId.trim() === "" ? NaN : Number(rawUserId);
-  if (!Number.isInteger(userId)) {
-    target.innerHTML = '<div class="error-row">未指定有效用户。<a href="../index.html">返回论坛主页</a></div>';
-    return;
-  }
-
-  try {
-    const userConfig = await fetchJson(new URL("configs/users.json", projectRoot), "用户资料");
-    if (!userConfig || typeof userConfig !== "object" || Array.isArray(userConfig)) {
-      throw new Error("用户资料格式错误：内容必须是对象。");
-    }
-
-    const user = Object.values(userConfig).find((candidate) => Number(candidate.id) === userId);
-    if (!user) throw new Error("找不到该用户。");
-
-    if (userId >= 1 && userId <= 6 && !getUnlockedUserIds().has(userId)) {
-      target.innerHTML = `
-        <div class="error-row">
-          该用户的资料尚未解锁。<a href="user_search.html">前往查询用户</a>
-        </div>
-      `;
-      return;
-    }
-
-    const avatarUrl = user.avatar_path
-      ? escapeHTML(new URL(user.avatar_path, projectRoot).href)
-      : "";
-    const avatar = avatarUrl
-      ? `<img class="user-profile-avatar" src="${avatarUrl}" alt="">`
-      : `<span class="user-profile-avatar user-profile-avatar--fallback" aria-hidden="true">${escapeHTML((user.nickname ?? "?").slice(0, 1))}</span>`;
-    const details = [
-      ["性别", genderLabel(user.gender)],
-      ["家乡", user.home],
-      ["职业", user.job],
-      ["年龄", user.age === undefined ? "" : `${user.age} 岁`]
-    ].filter(([, value]) => value !== undefined && value !== "");
-
-    target.innerHTML = `
-      <div class="user-profile-card">
-        <div class="user-profile-heading">
-          ${avatar}
-          <div><p class="tool-eyebrow">用户资料</p><h1>${escapeHTML(user.nickname ?? "未命名用户")}</h1></div>
-        </div>
-        <dl class="user-profile-details">
-          ${details.map(([label, value]) => `
-            <div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(value)}</dd></div>
-          `).join("")}
-        </dl>
-        <a class="tool-button tool-button--secondary profile-messages-link" data-profile-messages>
-          查看私信（仅管理员可用）
-          <span aria-hidden="true">↗</span>
-        </a>
-      </div>
-    `;
-    const messagesUrl = new URL("pages/messages.html", projectRoot);
-    messagesUrl.searchParams.set("id", String(user.id));
-    target.querySelector("[data-profile-messages]").href = messagesUrl.href;
-  } catch (error) {
-    target.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br><a href="../index.html">返回论坛主页</a></div>`;
-  }
-}
-
 async function initializeMessagesPage() {
   if (!requireAuthentication()) return;
 
@@ -1101,5 +1036,4 @@ if (pageType === "post") initializePostPage();
 if (pageType === "search") initializeSearchPage();
 if (pageType === "admin") initializeAdminPage();
 if (pageType === "user-search") initializeUserSearchPage();
-if (pageType === "user") initializeUserPage();
 if (pageType === "messages") initializeMessagesPage();

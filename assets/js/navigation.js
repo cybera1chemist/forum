@@ -14,7 +14,7 @@
       </a>
       <div class="account-menu">
         <button class="account-trigger" type="button" aria-expanded="false">
-          <img src="${new URL("assets/images/rabbit_avatar.jpg", projectRoot).href}" alt="">
+          <img src="${new URL("assets/images/rabbit_avatar.jpg", projectRoot).href}" alt="" data-profile-user-id="0" title="查看萌萌小兔兔宝宝的个人主页">
           <span class="account-name">【管理员】萌萌小兔兔宝宝</span>
           <span class="chevron" aria-hidden="true">⌄</span>
         </button>
