@@ -19,8 +19,8 @@
           <span class="chevron" aria-hidden="true">⌄</span>
         </button>
         <div class="account-dropdown">
-          <a href="#profile" data-unavailable>个人主页 <span>↗</span></a>
-          <a href="#admin" data-unavailable>管理员功能 <span>↗</span></a>
+          <a href="${new URL("pages/user.html?id=0", projectRoot).href}">个人主页 <span>↗</span></a>
+          <a href="${new URL("pages/admin.html", projectRoot).href}">管理员功能 <span>↗</span></a>
           <button type="button" data-logout>退出登录 <span>⇥</span></button>
         </div>
       </div>

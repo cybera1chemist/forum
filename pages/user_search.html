@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090711">
+    <title>查询用户 — 炼金术师论坛</title>
+    <link rel="stylesheet" href="../assets/css/forum.css">
+    <script src="../assets/js/navigation.js" defer></script>
+    <script src="../assets/js/forum.js" defer></script>
+  </head>
+  <body data-page="user-search">
+    <div class="ambient ambient--home" aria-hidden="true"></div>
+    <div id="site-navigation"></div>
+    <div class="site-shell">
+      <main class="tool-page user-search-page">
+        <p class="tool-eyebrow">ADMIN CONSOLE / 02</p>
+        <h1>查询用户</h1>
+        <p class="tool-description">填写用户资料以解除其匿名状态。</p>
+
+        <form class="user-query-form" data-user-query-form>
+          <div class="query-field">
+            <label for="query-nickname">用户名</label>
+            <input id="query-nickname" name="nickname" type="text" autocomplete="off" required>
+          </div>
+          <div class="query-field">
+            <label for="query-gender">性别</label>
+            <select id="query-gender" name="gender" required>
+              <option value="">请选择</option>
+              <option value="female">女</option>
+              <option value="male">男</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+          <div class="query-field">
+            <label for="query-home">家乡省份</label>
+            <select id="query-home" name="home" required>
+              <option value="">请选择</option>
+            </select>
+          </div>
+          <div class="query-field">
+            <label for="query-job">职业</label>
+            <select id="query-job" name="job" required>
+              <option value="">请选择</option>
+            </select>
+          </div>
+          <p id="user-query-message" class="form-message" role="status" aria-live="polite"></p>
+          <button class="tool-button" type="submit" disabled>提交查询</button>
+        </form>
+
+        <section id="user-query-result" class="user-query-result" aria-live="polite" hidden></section>
+      </main>
+
+      <footer class="site-footer">
+        <a class="footer-brand" href="../index.html">炼金术师论坛 <span>© 2026</span></a>
+      </footer>
+    </div>
+    <div class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

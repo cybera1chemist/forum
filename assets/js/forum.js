@@ -2,7 +2,61 @@ const LOGIN_USERNAME = "888888";
 const LOGIN_PASSWORD = "888888";
 
 const AUTH_STORAGE_KEY = "alchemist-forum-authenticated";
+const UNLOCKED_USERS_STORAGE_KEY = "alchemist-forum-unlocked-users";
 const projectRoot = new URL("../../", document.currentScript.src);
+
+const HOME_OPTIONS = [
+  ["安徽", "安徽省"],
+  ["澳门", "澳门特别行政区"],
+  ["北京", "北京市"],
+  ["重庆", "重庆市"],
+  ["福建", "福建省"],
+  ["甘肃", "甘肃省"],
+  ["广东", "广东省"],
+  ["广西", "广西壮族自治区"],
+  ["贵州", "贵州省"],
+  ["海南", "海南省"],
+  ["河北", "河北省"],
+  ["江苏", "江苏省"],
+  ["江西", "江西省"],
+  ["河南", "河南省"],
+  ["黑龙江", "黑龙江省"],
+  ["湖北", "湖北省"],
+  ["湖南", "湖南省"],
+  ["吉林", "吉林省"],
+  ["辽宁", "辽宁省"],
+  ["内蒙古", "内蒙古自治区"],
+  ["宁夏", "宁夏回族自治区"],
+  ["青海", "青海省"],
+  ["陕西", "陕西省"],
+  ["山东", "山东省"],
+  ["上海", "上海市"],
+  ["山西", "山西省"],
+  ["四川", "四川省"],
+  ["台湾", "台湾省"],
+  ["天津", "天津市"],
+  ["香港", "香港特别行政区"],
+  ["新疆", "新疆维吾尔自治区"],
+  ["西藏", "西藏自治区"],
+  ["云南", "云南省"],
+  ["浙江", "浙江省"]
+];
+
+const PROFESSION_OPTIONS = [
+  "厨师", "音乐制作人", "漫画家", "玄学顾问", "小说家", "程序员", "游戏制作人",
+  "医生", "护士", "药剂师", "心理咨询师", "教师", "教授", "研究员", "科学家",
+  "工程师", "建筑师", "设计师", "平面设计师", "UI设计师", "插画师", "画家",
+  "摄影师", "导演", "编剧", "演员", "歌手", "音乐家", "作曲家", "记者", "编辑",
+  "翻译", "律师", "法官", "警察", "消防员", "军人", "公务员", "企业家", "经理",
+  "会计师", "金融分析师", "银行职员", "销售", "市场营销专员", "公关专员",
+  "人力资源专员", "行政专员", "客服", "产品经理", "项目经理", "数据分析师",
+  "数据科学家", "网络安全工程师", "软件工程师", "前端工程师", "后端工程师",
+  "运维工程师", "游戏策划", "游戏美术", "游戏程序员", "动画师", "3D建模师",
+  "影视后期", "主播", "视频创作者", "网文作者", "图书管理员", "考古学家",
+  "历史学家", "社会工作者", "导游", "旅行规划师", "餐饮服务员", "面包师",
+  "调酒师", "农民", "园艺师", "兽医", "宠物美容师", "维修技师", "电工",
+  "机械师", "建筑工人", "司机", "飞行员", "船员", "快递员", "物流专员", "其他"
+];
 
 function showToast(message) {
   const toast = document.querySelector(".toast");
@@ -36,6 +90,42 @@ async function fetchJson(url, description) {
     throw new Error(`${description}读取失败（HTTP ${response.status}）`);
   }
   return response.json();
+}
+
+function getUnlockedUserIds() {
+  let storedValue;
+  try {
+    storedValue = localStorage.getItem(UNLOCKED_USERS_STORAGE_KEY);
+  } catch {
+    throw new Error("浏览器无法读取解锁状态，请检查隐私或存储设置后重试。");
+  }
+  if (storedValue === null) return new Set();
+
+  let userIds;
+  try {
+    userIds = JSON.parse(storedValue);
+  } catch {
+    throw new Error("已解锁用户记录格式错误，请清除浏览器中的论坛解锁记录后重试。");
+  }
+
+  if (!Array.isArray(userIds) || userIds.some((id) => !Number.isInteger(id) || id < 1)) {
+    throw new Error("已解锁用户记录格式错误，请清除浏览器中的论坛解锁记录后重试。");
+  }
+
+  return new Set(userIds);
+}
+
+function unlockUser(userId) {
+  const unlockedUserIds = getUnlockedUserIds();
+  unlockedUserIds.add(Number(userId));
+  try {
+    localStorage.setItem(
+      UNLOCKED_USERS_STORAGE_KEY,
+      JSON.stringify([...unlockedUserIds].sort((first, second) => first - second))
+    );
+  } catch {
+    throw new Error("浏览器无法保存解锁状态，请检查隐私或存储设置后重试。");
+  }
 }
 
 function initializeLoginPage() {
@@ -172,7 +262,11 @@ function getAnonymousAssignments(post, anonymousIdentities) {
 function getAuthorIdentity(post, authorId, users, anonymousIdentities) {
   const author = Object.values(users).find((user) => Number(user.id) === Number(authorId));
 
-  if (post.meta?.isAnonymous && Number(authorId) !== 0) {
+  if (
+    post.meta?.isAnonymous
+    && Number(authorId) !== 0
+    && !getUnlockedUserIds().has(Number(authorId))
+  ) {
     const assignedIdentity = getAnonymousAssignments(post, anonymousIdentities).get(String(authorId));
     return {
       name: assignedIdentity?.name ?? "匿名用户",
@@ -443,8 +537,210 @@ async function initializePostPage() {
   }
 }
 
+function requireAuthentication() {
+  if (localStorage.getItem(AUTH_STORAGE_KEY) === "true") return true;
+  window.location.replace(new URL("pages/log_in.html", projectRoot).href);
+  return false;
+}
+
+async function loadUsersForQuery() {
+  const userConfig = await fetchJson(new URL("configs/users.json", projectRoot), "用户资料");
+  if (!userConfig || typeof userConfig !== "object" || Array.isArray(userConfig)) {
+    throw new Error("用户资料格式错误：内容必须是对象。");
+  }
+
+  const users = Object.values(userConfig).filter((user) => Number(user?.id) !== 0);
+  if (users.length === 0 || users.some((user) => (
+    !user
+    || !Number.isInteger(user.id)
+    || typeof user.nickname !== "string"
+    || typeof user.gender !== "string"
+    || typeof user.home !== "string"
+    || typeof user.job !== "string"
+    || typeof user.avatar_path !== "string"
+  ))) {
+    throw new Error("用户资料格式错误：待查询用户必须包含昵称、性别、家乡、职业和头像路径。");
+  }
+
+  return users;
+}
+
+function normalizeGender(gender) {
+  return ({ "女": "female", "男": "male", "其他": "other" })[gender] ?? gender;
+}
+
+function genderLabel(gender) {
+  return ({ female: "女", male: "男", other: "其他" })[gender] ?? gender ?? "未填写";
+}
+
+function populateSelect(select, options) {
+  options.forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.append(option);
+  });
+}
+
+function renderQueriedUser(user, result) {
+  const profileUrl = new URL("pages/user.html", projectRoot);
+  profileUrl.searchParams.set("id", String(user.id));
+  const avatarUrl = escapeHTML(new URL(user.avatar_path, projectRoot).href);
+
+  result.innerHTML = `
+    <p class="query-success-note">资料匹配，已解除该用户的匿名状态。</p>
+    <a class="queried-user-card" href="${escapeHTML(profileUrl.href)}">
+      <img src="${avatarUrl}" alt="">
+      <span>${escapeHTML(user.nickname)}</span>
+      <span class="queried-user-arrow" aria-hidden="true">↗</span>
+    </a>
+  `;
+  result.hidden = false;
+}
+
+function initializeAdminPage() {
+  if (!requireAuthentication()) return;
+
+  document.querySelectorAll("[data-admin-unavailable]").forEach((button) => {
+    button.addEventListener("click", () => showToast("该功能暂时不可用。"));
+  });
+}
+
+async function initializeUserSearchPage() {
+  if (!requireAuthentication()) return;
+
+  const form = document.querySelector("[data-user-query-form]");
+  const message = document.querySelector("#user-query-message");
+  const result = document.querySelector("#user-query-result");
+  const homeSelect = form.querySelector('[name="home"]');
+  const jobSelect = form.querySelector('[name="job"]');
+  const submitButton = form.querySelector("button[type='submit']");
+  populateSelect(homeSelect, HOME_OPTIONS);
+  populateSelect(jobSelect, PROFESSION_OPTIONS.map((job) => [job, job]));
+
+  try {
+    const users = await loadUsersForQuery();
+    submitButton.disabled = false;
+    form.addEventListener("input", clearQueryResult);
+    form.addEventListener("change", clearQueryResult);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      message.classList.remove("is-success");
+      result.hidden = true;
+
+      const formData = new FormData(form);
+      const nickname = String(formData.get("nickname") ?? "").trim();
+      const gender = String(formData.get("gender") ?? "");
+      const home = String(formData.get("home") ?? "");
+      const job = String(formData.get("job") ?? "");
+      const user = users.find((candidate) => (
+        candidate.nickname.trim() === nickname
+        && normalizeGender(candidate.gender) === gender
+        && candidate.home === home
+        && candidate.job === job
+      ));
+
+      if (!user) {
+        message.textContent = "查询信息不正确，请检查后重试。";
+        return;
+      }
+
+      try {
+        unlockUser(user.id);
+      } catch (error) {
+        message.textContent = error.message;
+        return;
+      }
+
+      message.textContent = "";
+      message.classList.add("is-success");
+      renderQueriedUser(user, result);
+    });
+  } catch (error) {
+    message.textContent = error.message;
+    form.querySelector("button[type='submit']").disabled = true;
+  }
+}
+
+function clearQueryResult() {
+  const message = document.querySelector("#user-query-message");
+  const result = document.querySelector("#user-query-result");
+  message.textContent = "";
+  message.classList.remove("is-success");
+  result.hidden = true;
+}
+
+async function initializeUserPage() {
+  if (!requireAuthentication()) return;
+
+  const target = document.querySelector("#user-profile");
+  const rawUserId = new URLSearchParams(window.location.search).get("id");
+  const userId = rawUserId === null || rawUserId.trim() === "" ? NaN : Number(rawUserId);
+  if (!Number.isInteger(userId)) {
+    target.innerHTML = '<div class="error-row">未指定有效用户。<a href="../index.html">返回论坛主页</a></div>';
+    return;
+  }
+
+  try {
+    const userConfig = await fetchJson(new URL("configs/users.json", projectRoot), "用户资料");
+    if (!userConfig || typeof userConfig !== "object" || Array.isArray(userConfig)) {
+      throw new Error("用户资料格式错误：内容必须是对象。");
+    }
+
+    const user = Object.values(userConfig).find((candidate) => Number(candidate.id) === userId);
+    if (!user) throw new Error("找不到该用户。");
+
+    if (userId >= 1 && userId <= 6 && !getUnlockedUserIds().has(userId)) {
+      target.innerHTML = `
+        <div class="error-row">
+          该用户的资料尚未解锁。<a href="user_search.html">前往查询用户</a>
+        </div>
+      `;
+      return;
+    }
+
+    const avatarUrl = user.avatar_path
+      ? escapeHTML(new URL(user.avatar_path, projectRoot).href)
+      : "";
+    const avatar = avatarUrl
+      ? `<img class="user-profile-avatar" src="${avatarUrl}" alt="">`
+      : `<span class="user-profile-avatar user-profile-avatar--fallback" aria-hidden="true">${escapeHTML((user.nickname ?? "?").slice(0, 1))}</span>`;
+    const details = [
+      ["性别", genderLabel(user.gender)],
+      ["家乡", user.home],
+      ["职业", user.job],
+      ["年龄", user.age === undefined ? "" : `${user.age} 岁`]
+    ].filter(([, value]) => value !== undefined && value !== "");
+
+    target.innerHTML = `
+      <div class="user-profile-card">
+        <div class="user-profile-heading">
+          ${avatar}
+          <div><p class="tool-eyebrow">用户资料</p><h1>${escapeHTML(user.nickname ?? "未命名用户")}</h1></div>
+        </div>
+        <dl class="user-profile-details">
+          ${details.map(([label, value]) => `
+            <div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(value)}</dd></div>
+          `).join("")}
+        </dl>
+        <button class="tool-button tool-button--secondary" type="button" data-profile-messages>
+          查看私信（仅管理员可用）
+        </button>
+      </div>
+    `;
+    target.querySelector("[data-profile-messages]").addEventListener("click", () => {
+      showToast("用户私信功能暂时不可用。");
+    });
+  } catch (error) {
+    target.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br><a href="../index.html">返回论坛主页</a></div>`;
+  }
+}
+
 const pageType = document.body.dataset.page;
 if (pageType === "login") initializeLoginPage();
 if (pageType === "home") initializeHomePage();
 if (pageType === "post") initializePostPage();
 if (pageType === "search") initializeSearchPage();
+if (pageType === "admin") initializeAdminPage();
+if (pageType === "user-search") initializeUserSearchPage();
+if (pageType === "user") initializeUserPage();
