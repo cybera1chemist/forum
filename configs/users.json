@@ -2,13 +2,15 @@
     "admin":{
         "id": 0,
         "nickname": "萌萌小兔兔宝宝",
-        "gender": "male"
+        "gender": "male",
+        "avatar_path": "assets/images/rabbit_avatar.jpg"
     },
 
     "user1": {
         "id": 1,
         "nickname": "小贝",
         "gender": "male",
+        "avatar_path": "assets/images/user1_avatar.png",
         "is_spy": false,
         "age": 46,
         "job": "厨师",
@@ -19,6 +21,7 @@
         "id": 2,
         "nickname": "月之暗面",
         "gender": "male",
+        "avatar_path": "assets/images/user2_avatar.png",
         "is_spy": false,
         "age": 19,
         "job": "曲师",
@@ -29,6 +32,7 @@
         "id": 3,
         "nickname": "偏我来时不逢春",
         "gender": "female",
+        "avatar_path": "assets/images/user3_avatar.png",
         "is_spy": true,
         "age": 61,
         "job": "漫画家",
@@ -39,6 +43,7 @@
         "id": 4,
         "nickname": "核突",
         "gender": "male",
+        "avatar_path": "assets/images/user4_avatar.png",
         "is_spy": false,
         "age": 33,
         "job": "玄学顾问",
@@ -49,6 +54,7 @@
         "id": 5,
         "nickname": "酸甜苦辣咸快乐天天见",
         "gender": "female",
+        "avatar_path": "assets/images/user5_avatar.jpg",
         "is_spy": false,
         "age": 24,
         "job": "小说家",
@@ -59,11 +65,22 @@
         "id": 6,
         "nickname": "硫磺火",
         "gender": "female",
+        "avatar_path": "assets/images/user6_avatar.png",
         "is_spy": true,
         "age": 27,
         "job": "程序员",
         "home": "江苏"
-    }
+    },
 
+    "user7": {
+        "id": 7,
+        "nickname": "赛博炼金术师",
+        "gender": "female",
+        "avatar_path": "assets/images/user7_avatar.png",
+        "is_spy": false,
+        "age": 23,
+        "job": "游戏制作人",
+        "home": "安徽"
+    }
     
 }

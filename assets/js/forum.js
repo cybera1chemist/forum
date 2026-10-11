@@ -253,7 +253,7 @@ function initializeHomePage() {
   let posts = [];
   let users = {};
   let anonymousIdentities = [];
-  let selectedBoard = "all";
+  let selectedBoard = "兴趣爱好";
   loadForumData().then((loadedPosts) => {
     posts = loadedPosts.posts;
     users = loadedPosts.users;
