@@ -7,6 +7,7 @@
     <title>管理员功能 — 炼金术师论坛</title>
     <link rel="stylesheet" href="../assets/css/forum.css">
     <script src="../assets/js/navigation.js" defer></script>
+    <script src="../assets/js/open-links-in-new-tab.js" defer></script>
     <script src="../assets/js/avatar-profile-links.js" defer></script>
     <script src="../assets/js/forum.js" defer></script>
   </head>
@@ -15,26 +16,23 @@
     <div id="site-navigation"></div>
     <div class="site-shell">
       <main class="tool-page">
-        <p class="tool-eyebrow">ADMIN CONSOLE / 01</p>
         <h1>管理员功能</h1>
-        <p class="tool-description">选择一项管理操作。</p>
-
         <section class="admin-feature-list" aria-label="管理员功能列表">
-          <a class="admin-feature admin-feature--available" href="user_search.html">
-            <span class="admin-feature-icon" aria-hidden="true">⌕</span>
-            <span><strong>查询用户</strong><small>核验资料并解除用户匿名状态</small></span>
-            <span class="admin-feature-arrow" aria-hidden="true">↗</span>
-          </a>
           <button class="admin-feature" type="button" data-admin-unavailable>
             <span class="admin-feature-icon" aria-hidden="true">＋</span>
-            <span><strong>发布新公告</strong><small>向论坛成员发布站务通知</small></span>
-            <span class="admin-feature-status">暂不可用</span>
+            <span><strong>发布新公告</strong></span>
+            <span class="admin-feature-arrow" aria-hidden="true">↗</span>
           </button>
           <button class="admin-feature" type="button" data-admin-unavailable>
             <span class="admin-feature-icon" aria-hidden="true">≡</span>
-            <span><strong>查看操作日志</strong><small>查看近期管理操作记录</small></span>
-            <span class="admin-feature-status">暂不可用</span>
+            <span><strong>查看操作日志</strong></span>
+            <span class="admin-feature-arrow" aria-hidden="true">↗</span>
           </button>
+          <a class="admin-feature admin-feature--available" href="user_search.html">
+            <span class="admin-feature-icon" aria-hidden="true">⌕</span>
+            <span><strong>解锁用户信息</strong></span>
+            <span class="admin-feature-arrow" aria-hidden="true">↗</span>
+          </a>
         </section>
       </main>
 

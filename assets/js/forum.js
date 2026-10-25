@@ -865,7 +865,7 @@ async function initializeUserSearchPage() {
       ));
 
       if (!user) {
-        message.textContent = "查询信息不正确，请检查后重试。";
+        message.textContent = "未检索到符合条件的用户";
         return;
       }
 
@@ -972,7 +972,7 @@ async function initializeMessagesPage() {
           <p class="tool-eyebrow">PRIVATE MESSAGES</p>
           <h1>私信暂不可查看</h1>
           <p>只有对话双方的匿名状态都解除后，管理员才能查看这段私信。</p>
-          <a class="tool-button" href="user_search.html">前往查询用户</a>
+          <a class="tool-button" href="user_search.html">前往解锁用户信息</a>
         </section>
       `;
       return;

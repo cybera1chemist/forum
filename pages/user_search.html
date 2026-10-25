@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#090711">
-    <title>查询用户 — 炼金术师论坛</title>
+    <title>解锁用户信息 — 炼金术师论坛</title>
     <link rel="stylesheet" href="../assets/css/forum.css">
     <script src="../assets/js/navigation.js" defer></script>
+    <script src="../assets/js/open-links-in-new-tab.js" defer></script>
     <script src="../assets/js/avatar-profile-links.js" defer></script>
     <script src="../assets/js/forum.js" defer></script>
   </head>
@@ -15,12 +16,19 @@
     <div id="site-navigation"></div>
     <div class="site-shell">
       <main class="tool-page user-search-page">
-        <p class="tool-eyebrow">ADMIN CONSOLE / 02</p>
-        <h1>查询用户</h1>
+        <h1>解锁用户信息</h1>
+
+        <details class="user-search-intro">
+          <summary>功能简介</summary>
+          <div class="user-search-intro-content">
+            <p>此功能可让管理员查看特定用户的全部个人信息，包括基本资料、私信、发表过的帖子、匿名发言等。</p>
+            <p>为了能在数据库中准确匹配到特定的用户，请至少提供其下列信息：</p>
+          </div>
+        </details>
 
         <form class="user-query-form" data-user-query-form>
           <div class="query-field query-field--full">
-            <label for="query-nickname">用户名</label>
+            <label for="query-nickname">用户昵称</label>
             <input id="query-nickname" name="nickname" type="text" autocomplete="off" required>
           </div>
           <fieldset class="query-field query-choice-row">

@@ -146,7 +146,7 @@
       if (userId >= 1 && userId <= 6 && !getUnlockedUserIds().has(userId)) {
         profile.innerHTML = `
           <div class="error-row">
-            该用户的资料尚未解锁。<a href="user_search.html">前往查询用户</a>
+            该用户的资料尚未解锁。<a href="user_search.html">前往解锁用户信息</a>
           </div>
         `;
         return;
