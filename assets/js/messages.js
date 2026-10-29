@@ -117,6 +117,7 @@ function selectConversation(conversations, viewerId, messageId) {
   const panel = document.querySelector("#message-conversation-panel");
   panel.innerHTML = renderConversation(conversation, viewerId);
   panel.setAttribute("aria-labelledby", `conversation-tab-${messageId}`);
+  panel.scrollTop = panel.scrollHeight;
 
   const url = new URL(window.location.href);
   url.searchParams.set("m", messageId);
@@ -137,7 +138,6 @@ async function initializeMessagesPage() {
   if (viewerId === 0) {
     target.innerHTML = `
       <section class="messages-empty">
-        <p class="tool-eyebrow">PRIVATE MESSAGES</p>
         <h1>管理员私信</h1>
         <p>收件箱目前没有私信。</p>
       </section>
@@ -198,7 +198,6 @@ async function initializeMessagesPage() {
     if (visibleConversations.length === 0 && userConversations.length > 0) {
       target.innerHTML = `
         <section class="messages-locked">
-          <p class="tool-eyebrow">PRIVATE MESSAGES</p>
           <h1>私信暂不可查看</h1>
           <p>只有对话双方的匿名状态都解除后，管理员才能查看这段私信。</p>
           <a class="tool-button" href="user_search.html">前往解锁用户信息</a>
@@ -210,7 +209,6 @@ async function initializeMessagesPage() {
     if (visibleConversations.length === 0) {
       target.innerHTML = `
         <section class="messages-empty">
-          <p class="tool-eyebrow">PRIVATE MESSAGES</p>
           <h1>${escapeHTML(user.nickname)} 的私信</h1>
           <p>暂时没有可显示的对话。</p>
           <a class="message-back-link" href="user.html?id=${viewerId}">返回用户主页</a>
@@ -226,7 +224,6 @@ async function initializeMessagesPage() {
     target.innerHTML = `
       <header class="messages-page-heading">
         <div>
-          <p class="tool-eyebrow">PRIVATE MESSAGES</p>
           <h1>${escapeHTML(user.nickname)} 的私信</h1>
         </div>
         <a class="message-back-link" href="user.html?id=${viewerId}">返回用户主页</a>
