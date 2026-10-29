@@ -713,10 +713,13 @@ function validateMessage(message, filename, usersByNickname) {
     if (
       !dialog
       || typeof dialog.time !== "string"
-      || ![1, 2].includes(dialog.start_from_speaker)
       || !Array.isArray(dialog.content)
       || dialog.content.length === 0
-      || dialog.content.some((content) => typeof content !== "string")
+      || dialog.content.some((entry) => (
+        !entry
+        || ![message.speaker1, message.speaker2].includes(entry.speaker)
+        || typeof entry.content !== "string"
+      ))
     ) {
       throw new Error(`私信 ${filename} 的第 ${index + 1} 段对话格式错误。`);
     }
@@ -744,23 +747,19 @@ function renderConversation(message, viewerId) {
   const speaker1 = message.speaker1User;
   const speaker2 = message.speaker2User;
   const dialogs = message.dialogs.map((dialog) => {
-    const firstSpeakerId = dialog.start_from_speaker;
-    const firstSpeaker = firstSpeakerId === 1 ? speaker1 : speaker2;
     return `
       <section class="message-dialog">
         <h2 class="message-time">${escapeHTML(dialog.time)}</h2>
         <div class="message-dialog-list">
-          ${dialog.content.map((content, index) => {
-            const sender = index % 2 === 0
-              ? firstSpeaker
-              : firstSpeaker === speaker1 ? speaker2 : speaker1;
+          ${dialog.content.map((entry) => {
+            const sender = entry.speaker === message.speaker1 ? speaker1 : speaker2;
             const isViewer = Number(sender.id) === viewerId;
             return `
               <article class="message-line${isViewer ? " message-line--right" : " message-line--left"}">
                 ${renderMessageAvatar(sender)}
                 <div class="message-bubble-wrap">
                   <span class="message-sender">${escapeHTML(sender.nickname)}</span>
-                  <p class="message-bubble">${escapeHTML(content)}</p>
+                  <p class="message-bubble">${escapeHTML(entry.content)}</p>
                 </div>
               </article>
             `;
@@ -779,7 +778,7 @@ function renderConversationList(conversations, viewerId, selectedId) {
       Number(participant.id) !== viewerId
     ));
     const lastDialog = message.dialogs[message.dialogs.length - 1];
-    const preview = lastDialog.content[lastDialog.content.length - 1];
+    const preview = lastDialog.content[lastDialog.content.length - 1].content;
     const avatar = renderMessageAvatar(otherSpeaker);
     const selected = message.id === selectedId;
     return `
