@@ -1425,6 +1425,28 @@ body[data-page="messages"] .site-footer {
   overscroll-behavior: contain;
   background: radial-gradient(ellipse at 50% 0, rgba(88, 239, 255, .035), transparent 58%);
 }
+.message-conversation-panel,
+.conversation-sidebar {
+  scrollbar-color: rgba(177, 124, 255, .48) rgba(17, 16, 29, .72);
+  scrollbar-width: thin;
+}
+.message-conversation-panel::-webkit-scrollbar,
+.conversation-sidebar::-webkit-scrollbar { width: 8px; height: 8px; }
+.message-conversation-panel::-webkit-scrollbar-track,
+.conversation-sidebar::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background: rgba(17, 16, 29, .72);
+}
+.message-conversation-panel::-webkit-scrollbar-thumb,
+.conversation-sidebar::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(17, 16, 29, .72);
+  border-radius: 8px;
+  background: rgba(177, 124, 255, .48);
+}
+.message-conversation-panel::-webkit-scrollbar-thumb:hover,
+.conversation-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(88, 239, 255, .68);
+}
 .message-conversation { min-width: 0; }
 .message-dialog { padding: 18px 4px 22px; }
 .message-dialog + .message-dialog { padding-top: 4px; border-top: 0; }
