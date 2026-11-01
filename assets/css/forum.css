@@ -1463,6 +1463,15 @@ body[data-page="messages"] .site-footer {
 }
 
 .message-dialog-list { display: grid; gap: 17px; }
+.message-notice {
+  justify-self: center;
+  margin: 4px 0;
+  color: #ff777f;
+  font-size: 11px;
+  font-style: italic;
+  line-height: 1.6;
+  text-align: center;
+}
 .message-line { display: flex; align-items: flex-end; gap: 9px; }
 .message-line--right { flex-direction: row-reverse; }
 .message-avatar {

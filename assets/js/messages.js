@@ -17,11 +17,12 @@ function validateMessage(message, filename, usersByNickname) {
       || typeof dialog.time !== "string"
       || !Array.isArray(dialog.content)
       || dialog.content.length === 0
-      || dialog.content.some((entry) => (
-        !entry
-        || ![message.speaker1, message.speaker2].includes(entry.speaker)
-        || typeof entry.content !== "string"
-      ))
+      || dialog.content.some((entry) => {
+        if (!entry || typeof entry.content !== "string") return true;
+        if (entry.type === "notice") return "speaker" in entry;
+        return entry.type !== undefined
+          || ![message.speaker1, message.speaker2].includes(entry.speaker);
+      })
     ) {
       throw new Error(`私信 ${filename} 的第 ${index + 1} 段对话格式错误。`);
     }
@@ -32,6 +33,10 @@ function validateMessage(message, filename, usersByNickname) {
     speaker1User: usersByNickname.get(message.speaker1),
     speaker2User: usersByNickname.get(message.speaker2)
   };
+}
+
+function isBracketedMessageNote(content) {
+  return /^\[[\s\S]*\]$/.test(content);
 }
 
 function renderMessageAvatar(user) {
@@ -54,13 +59,17 @@ function renderConversation(message, viewerId) {
         <h2 class="message-time">${escapeHTML(dialog.time)}</h2>
         <div class="message-dialog-list">
           ${dialog.content.map((entry) => {
+            if (entry.type === "notice" || isBracketedMessageNote(entry.content)) {
+              return `<p class="message-notice">${escapeHTML(entry.content)}</p>`;
+            }
+
             const sender = entry.speaker === message.speaker1 ? speaker1 : speaker2;
             const isViewer = Number(sender.id) === viewerId;
             return `
               <article class="message-line${isViewer ? " message-line--right" : " message-line--left"}">
                 ${renderMessageAvatar(sender)}
                 <div class="message-bubble-wrap">
-                  <span class="message-sender">${escapeHTML(sender.nickname)}</span>
+                  ${isViewer ? "" : `<span class="message-sender">${escapeHTML(sender.nickname)}</span>`}
                   <p class="message-bubble">${escapeHTML(entry.content)}</p>
                 </div>
               </article>
