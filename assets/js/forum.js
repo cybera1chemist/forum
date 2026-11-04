@@ -328,7 +328,8 @@ function getAuthorIdentity(post, authorId, users, anonymousIdentities) {
   return {
     name: author?.nickname ?? "未知用户",
     avatarPath: author?.avatar_path ?? (Number(authorId) === 0 ? "assets/images/rabbit_avatar.jpg" : null),
-    userId: Number(authorId)
+    userId: Number(authorId),
+    routeId: author?.route_id ?? null
   };
 }
 
@@ -479,7 +480,7 @@ async function initializeSearchPage() {
 
 function renderAuthorAvatar(identity) {
   const profileAttributes = Number.isInteger(identity.userId)
-    ? `data-profile-user-id="${identity.userId}" title="查看${escapeHTML(identity.name)}的个人主页"`
+    ? `data-profile-user-id="${identity.userId}" data-profile-route-id="${escapeHTML(identity.routeId)}" title="查看${escapeHTML(identity.name)}的个人主页"`
     : "";
   if (identity.avatarPath) {
     const avatarUrl = escapeHTML(new URL(identity.avatarPath, projectRoot).href);
@@ -682,13 +683,13 @@ function renderProfessionOptions(container) {
 
 function renderQueriedUser(user, result) {
   const profileUrl = new URL("pages/user.html", projectRoot);
-  profileUrl.searchParams.set("id", String(user.id));
+  profileUrl.searchParams.set("u", user.route_id);
   const avatarUrl = escapeHTML(new URL(user.avatar_path, projectRoot).href);
 
   result.innerHTML = `
     <p class="query-success-note">资料匹配，已解除该用户的匿名状态。</p>
     <a class="queried-user-card" href="${escapeHTML(profileUrl.href)}">
-      <img src="${avatarUrl}" alt="" data-profile-user-id="${Number(user.id)}" title="查看${escapeHTML(user.nickname)}的个人主页">
+      <img src="${avatarUrl}" alt="" data-profile-user-id="${Number(user.id)}" data-profile-route-id="${escapeHTML(user.route_id)}" title="查看${escapeHTML(user.nickname)}的个人主页">
       <span>${escapeHTML(user.nickname)}</span>
       <span class="queried-user-arrow" aria-hidden="true">↗</span>
     </a>

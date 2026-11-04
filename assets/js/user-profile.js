@@ -82,7 +82,7 @@
   }
 
   function renderAvatar(user) {
-    const profileAttributes = `data-profile-user-id="${Number(user.id)}" title="查看${escapeHTML(user.nickname)}的个人主页"`;
+    const profileAttributes = `data-profile-user-id="${Number(user.id)}" data-profile-route-id="${escapeHTML(user.route_id)}" title="查看${escapeHTML(user.nickname)}的个人主页"`;
     if (user.avatar_path) {
       const avatarUrl = escapeHTML(new URL(user.avatar_path, projectRoot).href);
       return `<img class="user-profile-avatar" src="${avatarUrl}" alt="${escapeHTML(user.nickname)}" ${profileAttributes}>`;
@@ -127,9 +127,8 @@
       return;
     }
 
-    const rawUserId = new URLSearchParams(window.location.search).get("id");
-    const userId = rawUserId === null || rawUserId.trim() === "" ? NaN : Number(rawUserId);
-    if (!Number.isInteger(userId)) {
+    const userRouteId = new URLSearchParams(window.location.search).get("u");
+    if (!/^[\da-f]{12}$/i.test(userRouteId ?? "")) {
       profile.innerHTML = '<div class="error-row">未指定有效用户。<a href="../index.html">返回论坛主页</a></div>';
       return;
     }
@@ -140,8 +139,10 @@
         throw new Error("用户资料格式错误：内容必须是对象。");
       }
 
-      const user = Object.values(userConfig).find((candidate) => Number(candidate.id) === userId);
+      const user = Object.values(userConfig).find((candidate) => candidate.route_id === userRouteId);
       if (!user) throw new Error("找不到该用户。");
+      const userId = Number(user.id);
+      if (!Number.isInteger(userId)) throw new Error("用户资料格式错误：用户 ID 无效。");
 
       if (userId >= 1 && userId <= 6 && !getUnlockedUserIds().has(userId)) {
         profile.innerHTML = `
@@ -154,7 +155,7 @@
 
       const posts = await loadAuthoredPosts(userId);
       const messagesUrl = new URL("pages/messages.html", projectRoot);
-      messagesUrl.searchParams.set("id", String(user.id));
+      messagesUrl.searchParams.set("u", user.route_id);
       const details = [
         ["性别", getUserGender(user.gender)],
         ["年龄", user.age === undefined ? "未填写" : `${user.age} 岁`],

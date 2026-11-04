@@ -1,6 +1,7 @@
 (() => {
   const projectRoot = new URL("../../", document.currentScript.src);
   const navigationHost = document.querySelector("#site-navigation");
+  const adminProfileRouteId = "c047b8e63a21";
 
   if (!navigationHost) {
     throw new Error("Navigation component host #site-navigation was not found.");
@@ -14,12 +15,12 @@
       </a>
       <div class="account-menu">
         <button class="account-trigger" type="button" aria-expanded="false">
-          <img src="${new URL("assets/images/rabbit_avatar.jpg", projectRoot).href}" alt="" data-profile-user-id="0" title="查看萌萌小兔兔宝宝的个人主页">
+          <img src="${new URL("assets/images/rabbit_avatar.jpg", projectRoot).href}" alt="" data-profile-user-id="0" data-profile-route-id="${adminProfileRouteId}" title="查看萌萌小兔兔宝宝的个人主页">
           <span class="account-name">【管理员】萌萌小兔兔宝宝</span>
           <span class="chevron" aria-hidden="true">⌄</span>
         </button>
         <div class="account-dropdown">
-          <a href="${new URL("pages/user.html?id=0", projectRoot).href}">个人主页 <span>↗</span></a>
+          <a href="${new URL(`pages/user.html?u=${adminProfileRouteId}`, projectRoot).href}">个人主页 <span>↗</span></a>
           <a href="${new URL("pages/admin.html", projectRoot).href}">管理员功能 <span>↗</span></a>
           <button type="button" data-logout>退出登录 <span>⇥</span></button>
         </div>

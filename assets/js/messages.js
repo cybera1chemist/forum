@@ -40,7 +40,7 @@ function isBracketedMessageNote(content) {
 }
 
 function renderMessageAvatar(user) {
-  const profileAttributes = `data-profile-user-id="${Number(user.id)}" title="查看${escapeHTML(user.nickname)}的个人主页"`;
+  const profileAttributes = `data-profile-user-id="${Number(user.id)}" data-profile-route-id="${escapeHTML(user.route_id)}" title="查看${escapeHTML(user.nickname)}的个人主页"`;
   const avatarUrl = user.avatar_path
     ? escapeHTML(new URL(user.avatar_path, projectRoot).href)
     : "";
@@ -137,20 +137,9 @@ async function initializeMessagesPage() {
   if (!requireAuthentication()) return;
 
   const target = document.querySelector("#messages-content");
-  const rawUserId = new URLSearchParams(window.location.search).get("id");
-  const viewerId = rawUserId === null || rawUserId.trim() === "" ? NaN : Number(rawUserId);
-  if (!Number.isInteger(viewerId) || viewerId < 0) {
+  const userRouteId = new URLSearchParams(window.location.search).get("u");
+  if (!/^[\da-f]{12}$/i.test(userRouteId ?? "")) {
     target.innerHTML = '<div class="error-row">未指定有效用户。<a href="../index.html">返回论坛主页</a></div>';
-    return;
-  }
-
-  if (viewerId === 0) {
-    target.innerHTML = `
-      <section class="messages-empty">
-        <h1>管理员私信</h1>
-        <p>收件箱目前没有私信。</p>
-      </section>
-    `;
     return;
   }
 
@@ -169,12 +158,26 @@ async function initializeMessagesPage() {
     const usersByNickname = new Map(
       Object.values(userConfig).map((user) => [user.nickname, user])
     );
-    const user = Object.values(userConfig).find((candidate) => Number(candidate.id) === viewerId);
+    const user = Object.values(userConfig).find((candidate) => candidate.route_id === userRouteId);
     if (!user) throw new Error("找不到该用户。");
+    const viewerId = Number(user.id);
+    if (!Number.isInteger(viewerId) || viewerId < 0) {
+      throw new Error("用户资料格式错误：用户 ID 无效。");
+    }
+
+    if (viewerId === 0) {
+      target.innerHTML = `
+        <section class="messages-empty">
+          <h1>管理员私信</h1>
+          <p>收件箱目前没有私信。</p>
+        </section>
+      `;
+      return;
+    }
 
     const entries = Object.entries(messageIndex);
     if (entries.some(([messageId, filename]) => (
-      !/^msg-[\da-z-]+$/i.test(messageId)
+      !/^[\da-f]{12}$/i.test(messageId)
       || typeof filename !== "string"
       || !/^msg-[\da-z-]+\.json$/i.test(filename)
     ))) {
@@ -220,7 +223,7 @@ async function initializeMessagesPage() {
         <section class="messages-empty">
           <h1>${escapeHTML(user.nickname)} 的私信</h1>
           <p>暂时没有可显示的对话。</p>
-          <a class="message-back-link" href="user.html?id=${viewerId}">返回用户主页</a>
+          <a class="message-back-link" href="user.html?u=${encodeURIComponent(user.route_id)}">返回用户主页</a>
         </section>
       `;
       return;
@@ -235,7 +238,7 @@ async function initializeMessagesPage() {
         <div>
           <h1>${escapeHTML(user.nickname)} 的私信</h1>
         </div>
-        <a class="message-back-link" href="user.html?id=${viewerId}">返回用户主页</a>
+        <a class="message-back-link" href="user.html?u=${encodeURIComponent(user.route_id)}">返回用户主页</a>
       </header>
       <div class="messages-inbox-layout">
         <aside class="conversation-sidebar">
@@ -260,7 +263,7 @@ async function initializeMessagesPage() {
     selectConversation(visibleConversations, viewerId, selectedMessageId);
     document.title = `${user.nickname} 的私信 — 炼金术师论坛`;
   } catch (error) {
-    target.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br><a href="user.html?id=${viewerId}">返回用户主页</a></div>`;
+    target.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br><a href="user.html?u=${encodeURIComponent(userRouteId)}">返回用户主页</a></div>`;
   }
 }
 

@@ -1,6 +1,7 @@
 {
     "admin":{
         "id": 0,
+        "route_id": "c047b8e63a21",
         "nickname": "【管理员】萌萌小兔兔宝宝",
         "gender": "male",
         "avatar_path": "assets/images/rabbit_avatar.jpg"
@@ -8,6 +9,7 @@
 
     "user1": {
         "id": 1,
+        "route_id": "e45b8721ac90",
         "nickname": "小贝",
         "gender": "male",
         "avatar_path": "assets/images/user1_avatar.png",
@@ -19,6 +21,7 @@
     
     "user2": {
         "id": 2,
+        "route_id": "a19f6c30e872",
         "nickname": "月之暗面",
         "gender": "male",
         "avatar_path": "assets/images/user2_avatar.png",
@@ -30,6 +33,7 @@
 
     "user3": {
         "id": 3,
+        "route_id": "7d3a9c51e604",
         "nickname": "偏我来时不逢春",
         "gender": "female",
         "avatar_path": "assets/images/user3_avatar.png",
@@ -41,6 +45,7 @@
 
     "user4": {
         "id": 4,
+        "route_id": "f2b8046c19a7",
         "nickname": "核突",
         "gender": "male",
         "avatar_path": "assets/images/user4_avatar.png",
@@ -52,6 +57,7 @@
 
     "user5": {
         "id": 5,
+        "route_id": "c063d9e27a14",
         "nickname": "酸甜苦辣咸快乐天天见",
         "gender": "female",
         "avatar_path": "assets/images/user5_avatar.jpg",
@@ -63,6 +69,7 @@
 
     "user6": {
         "id": 6,
+        "route_id": "91e5a72c04bf",
         "nickname": "硫磺火",
         "gender": "female",
         "avatar_path": "assets/images/user6_avatar.png",
@@ -74,6 +81,7 @@
 
     "user7": {
         "id": 7,
+        "route_id": "3ac7f10d86b2",
         "nickname": "赛博炼金术师",
         "gender": "female",
         "avatar_path": "assets/images/user7_avatar.png",

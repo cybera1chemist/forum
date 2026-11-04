@@ -57,8 +57,14 @@
       return;
     }
 
+    const routeId = avatar.dataset.profileRouteId;
+    if (!/^[\da-f]{12}$/i.test(routeId ?? "")) {
+      showToast("无法打开此用户的个人主页，请刷新页面后重试。");
+      return;
+    }
+
     const profileUrl = new URL("pages/user.html", projectRoot);
-    profileUrl.searchParams.set("id", String(userId));
+    profileUrl.searchParams.set("u", routeId);
     window.location.assign(profileUrl.href);
   }
 
