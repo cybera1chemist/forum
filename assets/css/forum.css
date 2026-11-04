@@ -1508,6 +1508,8 @@ body[data-page="messages"] .site-footer {
   border-radius: 3px 14px 14px 14px;
 }
 
+.message-bubble strong { color: #c5a8ed; font-weight: 700; }
+
 .message-line--right .message-bubble {
   color: #eaffff;
   border-color: rgba(88, 239, 255, .28);

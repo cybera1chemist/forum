@@ -70,7 +70,7 @@ function renderConversation(message, viewerId) {
                 ${renderMessageAvatar(sender)}
                 <div class="message-bubble-wrap">
                   ${isViewer ? "" : `<span class="message-sender">${escapeHTML(sender.nickname)}</span>`}
-                  <p class="message-bubble">${escapeHTML(entry.content)}</p>
+                  <p class="message-bubble">${formatPostText(entry.content)}</p>
                 </div>
               </article>
             `;
