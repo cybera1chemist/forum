@@ -44,43 +44,6 @@
     return ({ female: "女", male: "男", other: "其他" })[gender] ?? gender ?? "未填写";
   }
 
-  function validatePostIndex(index) {
-    if (!index || typeof index !== "object" || Array.isArray(index)) {
-      throw new Error("帖子清单格式错误：内容必须是对象。");
-    }
-
-    const entries = Object.entries(index);
-    if (entries.some(([id, filename]) => (
-      !/^[\da-f]{12}$/i.test(id)
-      || typeof filename !== "string"
-      || !/^post-[\w-]+\.json$/i.test(filename)
-    ))) {
-      throw new Error("帖子清单格式错误：ID 或文件名格式无效。");
-    }
-
-    return entries;
-  }
-
-  async function loadAuthoredPosts(userId) {
-    const postIndex = await fetchJson(
-      new URL("texts/posts/index.json", projectRoot),
-      "帖子清单"
-    );
-    const entries = validatePostIndex(postIndex);
-    const posts = await Promise.all(entries.map(async ([id, filename]) => {
-      const post = await fetchJson(
-        new URL(`texts/posts/${encodeURIComponent(filename)}`, projectRoot),
-        `帖子 ${filename}`
-      );
-      if (!post || !post.meta || typeof post.meta !== "object") {
-        throw new Error(`帖子 ${filename} 的格式错误：缺少 meta 元数据。`);
-      }
-      return { ...post, id };
-    }));
-
-    return posts.filter((post) => Number(post.meta.author_id) === userId);
-  }
-
   function renderAvatar(user) {
     const profileAttributes = `data-profile-user-id="${Number(user.id)}" data-profile-route-id="${escapeHTML(user.route_id)}" title="查看${escapeHTML(user.nickname)}的个人主页"`;
     if (user.avatar_path) {
@@ -91,33 +54,6 @@
       <span class="user-profile-avatar user-profile-avatar--fallback" aria-hidden="true" ${profileAttributes}>
         ${escapeHTML((user.nickname ?? "?").slice(0, 1))}
       </span>
-    `;
-  }
-
-  function renderPosts(posts) {
-    if (posts.length === 0) {
-      return '<p class="user-posts-empty">该用户还没有发表过帖子。</p>';
-    }
-
-    return `
-      <div class="user-post-list">
-        ${posts.map((post) => {
-          const postUrl = new URL("pages/post.html", projectRoot);
-          postUrl.searchParams.set("p", post.id);
-          const replyCount = Array.isArray(post.replies) ? post.replies.length : 0;
-          return `
-            <article class="user-post-row">
-              <div class="user-post-copy">
-                <span class="post-tag">${escapeHTML(post.meta.board || "未分类")}</span>
-                <a class="user-post-title" href="${escapeHTML(postUrl.href)}">
-                  ${escapeHTML(post.meta.title || "未命名帖子")}
-                </a>
-              </div>
-              <span class="user-post-count">${replyCount} 回复</span>
-            </article>
-          `;
-        }).join("")}
-      </div>
     `;
   }
 
@@ -153,7 +89,6 @@
         return;
       }
 
-      const posts = await loadAuthoredPosts(userId);
       const messagesUrl = new URL("pages/messages.html", projectRoot);
       messagesUrl.searchParams.set("u", user.route_id);
       const details = [
@@ -175,13 +110,6 @@
               <strong>${escapeHTML(value)}</strong>
             </div>
           `).join("")}
-        </section>
-        <section class="user-posts-section" aria-labelledby="user-posts-heading">
-          <div class="user-posts-heading">
-            <h2 id="user-posts-heading">发表的帖子</h2>
-            <span>${posts.length} 篇</span>
-          </div>
-          ${renderPosts(posts)}
         </section>
         <div class="user-profile-actions">
           <a class="tool-button tool-button--secondary profile-messages-link" href="${escapeHTML(messagesUrl.href)}">

@@ -994,7 +994,7 @@ body[data-page="user"] {
 .admin-feature-status { color: #8c829a; font-size: 10px; white-space: nowrap; }
 
 .user-query-form {
-  max-width: 850px;
+  width: 100%;
   padding: 22px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -1183,7 +1183,7 @@ body[data-page="user"] {
 .tool-button--secondary { color: #d9c6f3; border: 1px solid var(--line); background: rgba(177, 124, 255, .09); }
 
 .user-query-result {
-  max-width: 690px;
+  width: 100%;
   margin-top: 20px;
   padding: 18px 21px;
   border: 1px solid rgba(88, 239, 255, .27);
@@ -1204,17 +1204,22 @@ body[data-page="user"] {
 }
 
 .queried-user-arrow { margin-left: auto; color: var(--cyan); }
+
+.user-search-page,
+.user-profile-page {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.user-search-page { max-width: 850px; }
 .user-profile-page { max-width: 900px; }
 .user-profile-hero {
-  min-height: 190px;
-  padding: 25px 30px;
+  padding: 25px 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 27px;
-  border: 1px solid rgba(88, 239, 255, .22);
-  background:
-    radial-gradient(ellipse at 0 50%, rgba(88, 239, 255, .1), transparent 48%),
-    linear-gradient(135deg, rgba(24, 20, 42, .96), rgba(11, 17, 31, .96));
+  gap: 18px;
+  text-align: center;
 }
 
 .user-profile-hero h1 {
@@ -1249,7 +1254,7 @@ body[data-page="user"] {
   margin-top: 14px;
   padding: 3px 23px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   border: 1px solid var(--line);
   background: rgba(16, 14, 29, .8);
 }
@@ -1264,35 +1269,10 @@ body[data-page="user"] {
   border-bottom: 1px solid rgba(197, 177, 235, .1);
 }
 
-.user-profile-info-item:nth-last-child(-n + 2) { border-bottom: 0; }
-.user-profile-info-item:nth-child(odd) { border-right: 1px solid rgba(197, 177, 235, .1); }
+.user-profile-info-item:last-child { border-bottom: 0; }
 .user-profile-info-item > span { color: #9f95ad; font-size: 12px; }
 .user-profile-info-item > strong { color: #e9e2f5; font-size: 13px; font-weight: 500; text-align: right; overflow-wrap: anywhere; }
 
-.user-posts-section { margin-top: 30px; }
-.user-posts-heading { margin-bottom: 12px; display: flex; align-items: baseline; justify-content: space-between; }
-.user-posts-heading h2 { margin: 0; font-size: 19px; font-weight: 600; }
-.user-posts-heading > span { color: #978da3; font-size: 11px; }
-.user-post-list { border-top: 1px solid var(--line); }
-.user-post-row {
-  min-height: 77px;
-  padding: 14px 13px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(16, 14, 29, .36);
-  transition: background .18s;
-}
-
-.user-post-row:hover { background: rgba(88, 239, 255, .045); }
-.user-post-copy { min-width: 0; display: grid; justify-items: start; gap: 8px; }
-.user-post-copy .post-tag { padding: 3px 7px; font-size: 9px; }
-.user-post-title { color: #e8e0f2; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
-.user-post-title:hover { color: var(--cyan); }
-.user-post-count { flex: 0 0 auto; color: #93899f; font-size: 10px; white-space: nowrap; }
-.user-posts-empty { margin: 0; padding: 24px 14px; color: #9f95ad; font-size: 12px; border-bottom: 1px solid var(--line); }
 .user-profile-actions { margin-top: 22px; display: flex; justify-content: flex-end; }
 .profile-messages-link { text-decoration: none; }
 
@@ -1565,14 +1545,12 @@ body[data-page="messages"] .site-footer {
   .profession-categories { grid-template-columns: 1fr; }
   .profession-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .choice-option { flex: 1 1 0; justify-content: center; padding: 0 10px; }
-  .user-profile-hero { min-height: 142px; padding: 18px; gap: 18px; }
+  .user-profile-hero { padding: 18px 0; gap: 14px; }
   .user-profile-avatar { width: 96px; height: 96px; flex-basis: 96px; }
   .user-profile-info { padding: 2px 10px; }
   .user-profile-info-item { min-height: 58px; padding: 9px 8px; }
   .user-profile-info-item > span { font-size: 11px; }
   .user-profile-info-item > strong { font-size: 12px; }
-  .user-posts-section { margin-top: 25px; }
-  .user-post-title { font-size: 12px; }
   .user-profile-actions { justify-content: stretch; }
   .user-profile-actions .tool-button { width: 100%; }
   body[data-page="messages"] .site-footer { min-height: 64px; }
