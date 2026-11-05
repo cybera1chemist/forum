@@ -1,3 +1,5 @@
+const MESSAGE_SHARED_LINK_URL = "https://cybera1chemist.github.io/palandu/";
+
 function validateMessage(message, filename, usersByNickname) {
   if (
     !message
@@ -20,6 +22,12 @@ function validateMessage(message, filename, usersByNickname) {
       || dialog.content.some((entry) => {
         if (!entry || typeof entry.content !== "string") return true;
         if (entry.type === "notice") return "speaker" in entry;
+        if (entry.type === "link") {
+          return ![message.speaker1, message.speaker2].includes(entry.speaker)
+            || entry.content !== "[分享链接：帕拉恩度]"
+            || entry.link_text !== "帕拉恩度"
+            || entry.href !== MESSAGE_SHARED_LINK_URL;
+        }
         return entry.type !== undefined
           || ![message.speaker1, message.speaker2].includes(entry.speaker);
       })
@@ -33,10 +41,6 @@ function validateMessage(message, filename, usersByNickname) {
     speaker1User: usersByNickname.get(message.speaker1),
     speaker2User: usersByNickname.get(message.speaker2)
   };
-}
-
-function isBracketedMessageNote(content) {
-  return /^\[[\s\S]*\]$/.test(content);
 }
 
 function renderMessageAvatar(user) {
@@ -59,18 +63,21 @@ function renderConversation(message, viewerId) {
         <h2 class="message-time">${escapeHTML(dialog.time)}</h2>
         <div class="message-dialog-list">
           ${dialog.content.map((entry) => {
-            if (entry.type === "notice" || isBracketedMessageNote(entry.content)) {
+            if (entry.type === "notice") {
               return `<p class="message-notice">${escapeHTML(entry.content)}</p>`;
             }
 
             const sender = entry.speaker === message.speaker1 ? speaker1 : speaker2;
             const isViewer = Number(sender.id) === viewerId;
+            const content = entry.type === "link"
+              ? `<a class="message-shared-link" href="${MESSAGE_SHARED_LINK_URL}">${escapeHTML(entry.link_text)}</a>`
+              : formatPostText(entry.content);
             return `
               <article class="message-line${isViewer ? " message-line--right" : " message-line--left"}">
                 ${renderMessageAvatar(sender)}
                 <div class="message-bubble-wrap">
                   ${isViewer ? "" : `<span class="message-sender">${escapeHTML(sender.nickname)}</span>`}
-                  <p class="message-bubble">${formatPostText(entry.content)}</p>
+                  <p class="message-bubble">${content}</p>
                 </div>
               </article>
             `;

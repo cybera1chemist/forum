@@ -1509,6 +1509,12 @@ body[data-page="messages"] .site-footer {
 }
 
 .message-bubble strong { color: #c5a8ed; font-weight: 700; }
+.message-shared-link {
+  color: #58efff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.message-shared-link:hover { color: #ff55c8; }
 
 .message-line--right .message-bubble {
   color: #eaffff;
