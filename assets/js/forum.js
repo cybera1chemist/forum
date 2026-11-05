@@ -330,13 +330,16 @@ function getAuthorName(post, users, anonymousIdentities) {
   return getAuthorIdentity(post, post.meta?.author_id, users, anonymousIdentities).name;
 }
 
-function renderPosts(posts, selectedBoard, users, anonymousIdentities) {
+function renderPosts(posts, selectedBoard, users, anonymousIdentities, fakePosts = []) {
   const postList = document.querySelector("#recent-posts");
   const filteredPosts = posts
     .filter((post) => post.meta?.["search-only"] === false)
     .filter((post) => selectedBoard === "all" || (post.meta?.board || "未分类") === selectedBoard);
+  const filteredFakePosts = fakePosts.filter((post) => (
+    selectedBoard === "all" || post.board === selectedBoard
+  ));
 
-  if (filteredPosts.length === 0) {
+  if (filteredPosts.length === 0 && filteredFakePosts.length === 0) {
     const emptyMessage = selectedBoard === "all"
       ? "还没有近期讨论。"
       : `「${escapeHTML(selectedBoard)}」版块暂时还没有讨论。`;
@@ -344,11 +347,11 @@ function renderPosts(posts, selectedBoard, users, anonymousIdentities) {
     return;
   }
 
-  renderPostList(postList, filteredPosts, users, anonymousIdentities);
+  renderPostList(postList, filteredPosts, users, anonymousIdentities, filteredFakePosts);
 }
 
-function renderPostList(postList, posts, users, anonymousIdentities) {
-  postList.innerHTML = posts.map((post) => {
+function renderPostList(postList, posts, users, anonymousIdentities, fakePosts = []) {
+  const realPostRows = posts.map((post) => {
     const meta = post.meta ?? {};
     const title = escapeHTML(meta.title || "未命名帖子");
     const board = escapeHTML(meta.board || "未分类");
@@ -368,7 +371,54 @@ function renderPostList(postList, posts, users, anonymousIdentities) {
         <span class="post-count">${replyCount} 回复</span>
       </article>
     `;
-  }).join("");
+  });
+  const fakePostRows = fakePosts.map((post) => `
+    <article class="post-row">
+      <div class="post-main">
+        <div class="post-meta"><span class="post-tag">${escapeHTML(post.board)}</span></div>
+        <span class="post-title post-title--fake">${escapeHTML(post.title)}</span>
+        <p class="post-author">楼主：${escapeHTML(post.authorName)}</p>
+      </div>
+      <span class="post-count">${post.replyCount} 回复</span>
+    </article>
+  `);
+  postList.innerHTML = [...realPostRows, ...fakePostRows].join("");
+}
+
+function validateFakePosts(data, anonymousIdentities) {
+  const validBoards = new Set(
+    [...document.querySelectorAll(".board-tab")].map((tab) => tab.dataset.board)
+  );
+  const anonymousIdentityById = new Map(
+    anonymousIdentities.map((identity) => [Number(identity.id), identity])
+  );
+  if (
+    !data
+    || typeof data !== "object"
+    || Array.isArray(data)
+    || !Array.isArray(data.posts)
+    || data.posts.some((post) => (
+      !post
+      || typeof post.board !== "string"
+      || !validBoards.has(post.board)
+      || typeof post.title !== "string"
+      || !post.title.trim()
+      || !Number.isInteger(post.authorId)
+      || post.authorId < 1
+      || post.authorId > anonymousIdentities.length
+      || !anonymousIdentityById.has(post.authorId)
+      || typeof anonymousIdentityById.get(post.authorId)?.name !== "string"
+      || !Number.isInteger(post.replyCount)
+      || post.replyCount < 0
+    ))
+  ) {
+    throw new Error("假帖清单格式错误：每条假帖必须包含有效版块、标题、匿名楼主 ID 和非负回复数。");
+  }
+
+  return data.posts.map((post) => ({
+    ...post,
+    authorName: anonymousIdentityById.get(post.authorId).name
+  }));
 }
 
 function normalizeSearchText(value) {
@@ -410,12 +460,17 @@ function initializeHomePage() {
   let posts = [];
   let users = {};
   let anonymousIdentities = [];
+  let homeFakePosts = [];
   let selectedBoard = "兴趣爱好";
-  loadForumData().then((loadedPosts) => {
+  Promise.all([
+    loadForumData(),
+    fetchJson(new URL("texts/posts/fake-posts.json", projectRoot), "假帖清单")
+  ]).then(([loadedPosts, fakePostData]) => {
     posts = loadedPosts.posts;
     users = loadedPosts.users;
     anonymousIdentities = loadedPosts.anonymousIdentities;
-    renderPosts(posts, selectedBoard, users, anonymousIdentities);
+    homeFakePosts = validateFakePosts(fakePostData, anonymousIdentities);
+    renderPosts(posts, selectedBoard, users, anonymousIdentities, homeFakePosts);
   }).catch((error) => {
     document.querySelector("#recent-posts").innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br>请通过静态网页服务器打开论坛，以允许浏览器读取 JSON 文件。</div>`;
   });
@@ -431,7 +486,7 @@ function initializeHomePage() {
         otherTab.setAttribute("aria-selected", String(isSelected));
         otherTab.tabIndex = isSelected ? 0 : -1;
       });
-      renderPosts(posts, selectedBoard, users, anonymousIdentities);
+      renderPosts(posts, selectedBoard, users, anonymousIdentities, homeFakePosts);
     });
   });
 }

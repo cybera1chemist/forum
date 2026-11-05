@@ -148,6 +148,7 @@ button { color: inherit; }
 .post-tag { padding: 2px 5px; color: var(--cyan); border: 1px solid rgba(109, 229, 218, .23); background: rgba(109, 229, 218, .05); }
 .post-tag--pinned { color: var(--lime); border-color: rgba(177, 124, 255, .3); background: rgba(177, 124, 255, .08); }
 .post-title { display: block; overflow: hidden; color: #e0e9e5; font-size: 14px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.post-title--fake { cursor: pointer; }
 .post-author { margin: 5px 0 0; color: #8e85a0; font-size: 11px; }
 .post-count { padding: 6px 8px; color: #98a49e; font: 10px var(--mono); border: 1px solid var(--line); white-space: nowrap; }
 .loading-row, .empty-row, .error-row { min-height: 70px; display: flex; align-items: center; gap: 10px; color: #82908a; font-size: 11px; }

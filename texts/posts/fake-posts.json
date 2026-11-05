@@ -1,0 +1,64 @@
+{
+  "posts": [
+    {
+      "board": "闲聊吐槽",
+      "title": "特别特别讨厌星期一！",
+      "authorId": 12,
+      "replyCount": 9
+    },
+    {
+      "board": "闲聊吐槽",
+      "title": "破译笔记好难，不想干又不行……",
+      "authorId": 14,
+      "replyCount": 18
+    },
+    {
+      "board": "闲聊吐槽",
+      "title": "今天出门又忘记带钥匙了，真是服了自己",
+      "authorId": 17,
+      "replyCount": 6
+    },
+    {
+      "board": "闲聊吐槽",
+      "title": "怎么感觉咱们论坛说话的人变少了，越来越冷清了？",
+      "authorId": 34,
+      "replyCount": 7
+    },
+    {
+      "board": "兴趣爱好",
+      "title": "迷上拼豆了！根本停不下来！",
+      "authorId": 7,
+      "replyCount": 8
+    },
+    {
+      "board": "兴趣爱好",
+      "title": "最近在练习画画，给大家分享下自己的进步",
+      "authorId": 10,
+      "replyCount": 10
+    },
+    {
+      "board": "兴趣爱好",
+      "title": "分享一些熬夜工作的时候听的亢奋歌单",
+      "authorId": 44,
+      "replyCount": 5
+    },
+    {
+      "board": "求助答疑",
+      "title": "为什么我邻居家的狗长得这么丑？",
+      "authorId": 10,
+      "replyCount": 13
+    },
+    {
+      "board": "求助答疑",
+      "title": "想给朋友送生日礼物，大家有什么好主意吗",
+      "authorId": 13,
+      "replyCount": 6
+    },
+    {
+      "board": "求助答疑",
+      "title": "有没有什么适合和对象一起联机打的游戏呀",
+      "authorId": 10,
+      "replyCount": 9
+    }
+  ]
+}
