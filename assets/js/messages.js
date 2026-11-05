@@ -54,6 +54,16 @@ function renderMessageAvatar(user) {
   return `<span class="message-avatar message-avatar--fallback" aria-hidden="true" ${profileAttributes}>${escapeHTML(user.nickname.slice(0, 1))}</span>`;
 }
 
+function renderLockedMessageAvatar() {
+  return '<span class="message-avatar message-avatar--locked" aria-hidden="true">?</span>';
+}
+
+function isConversationUnlocked(message, unlockedUsers) {
+  return message.participants.every((participant) => (
+    Number(participant.id) === 0 || unlockedUsers.has(Number(participant.id))
+  ));
+}
+
 function renderConversation(message, viewerId) {
   const speaker1 = message.speaker1User;
   const speaker2 = message.speaker2User;
@@ -90,14 +100,19 @@ function renderConversation(message, viewerId) {
   return `<article class="message-conversation">${dialogs}</article>`;
 }
 
-function renderConversationList(conversations, viewerId, selectedId) {
+function renderConversationList(conversations, viewerId, selectedId, unlockedUsers) {
   return conversations.map((message) => {
     const otherSpeaker = message.participants.find((participant) => (
       Number(participant.id) !== viewerId
     ));
     const lastDialog = message.dialogs[message.dialogs.length - 1];
     const preview = lastDialog.content[lastDialog.content.length - 1].content;
-    const avatar = renderMessageAvatar(otherSpeaker);
+    const otherSpeakerUnlocked = Number(otherSpeaker.id) === 0
+      || unlockedUsers.has(Number(otherSpeaker.id));
+    const displayName = otherSpeakerUnlocked ? otherSpeaker.nickname : "未知用户";
+    const avatar = otherSpeakerUnlocked
+      ? renderMessageAvatar(otherSpeaker)
+      : renderLockedMessageAvatar();
     const selected = message.id === selectedId;
     return `
       <button
@@ -111,7 +126,7 @@ function renderConversationList(conversations, viewerId, selectedId) {
       >
         ${avatar}
         <span class="conversation-tab-copy">
-          <strong>${escapeHTML(otherSpeaker.nickname)}</strong>
+          <strong>${escapeHTML(displayName)}</strong>
           <small>${escapeHTML(preview)}</small>
         </span>
       </button>
@@ -119,7 +134,7 @@ function renderConversationList(conversations, viewerId, selectedId) {
   }).join("");
 }
 
-function selectConversation(conversations, viewerId, messageId) {
+function selectConversation(conversations, viewerId, messageId, unlockedUsers) {
   const conversation = conversations.find((message) => message.id === messageId);
   if (!conversation) return;
 
@@ -131,7 +146,9 @@ function selectConversation(conversations, viewerId, messageId) {
   });
 
   const panel = document.querySelector("#message-conversation-panel");
-  panel.innerHTML = renderConversation(conversation, viewerId);
+  panel.innerHTML = isConversationUnlocked(conversation, unlockedUsers)
+    ? renderConversation(conversation, viewerId)
+    : '<div class="message-locked-placeholder">该对话暂不可查看。</div>';
   panel.setAttribute("aria-labelledby", `conversation-tab-${messageId}`);
   panel.scrollTop = panel.scrollHeight;
 
@@ -208,24 +225,8 @@ async function initializeMessagesPage() {
       message.participants.some((participant) => Number(participant.id) === viewerId)
     ));
     const unlockedUsers = getUnlockedUserIds();
-    const visibleConversations = userConversations.filter((message) => (
-      message.participants.every((participant) => (
-        Number(participant.id) === 0 || unlockedUsers.has(Number(participant.id))
-      ))
-    ));
 
-    if (visibleConversations.length === 0 && userConversations.length > 0) {
-      target.innerHTML = `
-        <section class="messages-locked">
-          <h1>私信暂不可查看</h1>
-          <p>只有对话双方的匿名状态都解除后，管理员才能查看这段私信。</p>
-          <a class="tool-button" href="user_search.html">前往解锁用户信息</a>
-        </section>
-      `;
-      return;
-    }
-
-    if (visibleConversations.length === 0) {
+    if (userConversations.length === 0) {
       target.innerHTML = `
         <section class="messages-empty">
           <h1>${escapeHTML(user.nickname)} 的私信</h1>
@@ -237,9 +238,15 @@ async function initializeMessagesPage() {
     }
 
     const requestedMessageId = new URLSearchParams(window.location.search).get("m");
-    const selectedMessageId = visibleConversations.some((message) => message.id === requestedMessageId)
+    const requestedConversation = userConversations.find((message) => (
+      message.id === requestedMessageId
+    ));
+    const selectedMessageId = requestedConversation
+      && isConversationUnlocked(requestedConversation, unlockedUsers)
       ? requestedMessageId
-      : visibleConversations[0].id;
+      : userConversations.find((message) => (
+        isConversationUnlocked(message, unlockedUsers)
+      ))?.id ?? userConversations[0].id;
     target.innerHTML = `
       <header class="messages-page-heading">
         <div>
@@ -251,7 +258,7 @@ async function initializeMessagesPage() {
         <aside class="conversation-sidebar">
           <h2>对话 </h2>
           <div class="conversation-tabs" role="tablist" aria-label="选择私信对话">
-            ${renderConversationList(visibleConversations, viewerId, selectedMessageId)}
+            ${renderConversationList(userConversations, viewerId, selectedMessageId, unlockedUsers)}
           </div>
         </aside>
         <section
@@ -264,10 +271,10 @@ async function initializeMessagesPage() {
     `;
     target.querySelectorAll(".conversation-tab").forEach((tab) => {
       tab.addEventListener("click", () => {
-        selectConversation(visibleConversations, viewerId, tab.dataset.messageId);
+        selectConversation(userConversations, viewerId, tab.dataset.messageId, unlockedUsers);
       });
     });
-    selectConversation(visibleConversations, viewerId, selectedMessageId);
+    selectConversation(userConversations, viewerId, selectedMessageId, unlockedUsers);
     document.title = `${user.nickname} 的私信 — 炼金术师论坛`;
   } catch (error) {
     target.innerHTML = `<div class="error-row">${escapeHTML(error.message)}<br><a href="user.html?u=${encodeURIComponent(userRouteId)}">返回用户主页</a></div>`;
