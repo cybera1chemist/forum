@@ -25,7 +25,7 @@ function validateMessage(message, filename, usersByNickname) {
         if (entry.type === "link") {
           return ![message.speaker1, message.speaker2].includes(entry.speaker)
             || entry.content !== "[分享链接：帕拉恩度]"
-            || entry.link_text !== "帕拉恩度"
+            || entry.link_text !== "[分享链接：帕拉恩度]"
             || entry.href !== MESSAGE_SHARED_LINK_URL;
         }
         return entry.type !== undefined

@@ -65,7 +65,7 @@
 
     const profileUrl = new URL("pages/user.html", projectRoot);
     profileUrl.searchParams.set("u", routeId);
-    window.location.assign(profileUrl.href);
+    window.open(profileUrl.href, "_blank", "noopener,noreferrer");
   }
 
   document.addEventListener("click", (event) => {
