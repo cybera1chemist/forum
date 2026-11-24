@@ -431,7 +431,7 @@ function searchPosts(posts, query) {
 
   return posts.filter((post) => Array.isArray(post.meta?.keywords)
     && post.meta.keywords.some((keyword) => (
-      normalizeSearchText(keyword).includes(normalizedQuery)
+      normalizeSearchText(keyword) === normalizedQuery
     )));
 }
 
@@ -517,7 +517,7 @@ async function initializeSearchPage() {
     const { posts, users, anonymousIdentities } = await loadForumData();
     const matches = searchPosts(posts, query);
     if (matches.length === 0) {
-      results.innerHTML = '<div class="empty-row">没有找到包含该关键词的帖子。</div>';
+      results.innerHTML = '<div class="empty-row">没有找到匹配该关键词的帖子。</div>';
       return;
     }
     renderPostList(results, matches, users, anonymousIdentities);
